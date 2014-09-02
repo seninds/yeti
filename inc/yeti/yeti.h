@@ -51,7 +51,7 @@ enum LogLevel {
 };
 
 // user should not see _Shutdown() in yeti namespace
-namespace{ void _Shutdown(); }
+namespace { void _Shutdown(); }
 
 class Logger {
  public:
@@ -60,62 +60,24 @@ class Logger {
   Logger& operator=(const Logger&) = delete;
   Logger* operator &() = delete;
 
-  static Logger& instance() {
-    static Logger logger;
-
-    // register _Shutdown() at std::exit()
-    static bool is_atexit_registered = false;
-    static std::mutex registered_mutex;
-    if (!is_atexit_registered) {
-      std::lock_guard<std::mutex> lock(registered_mutex);
-      if (!is_atexit_registered) {
-        std::atexit(_Shutdown);
-        is_atexit_registered = true;
-      }
-    }
-    return logger;
-  }
+  static Logger& instance();
+  void PushToQueue(const std::function<void()>& queue_func);
 
   void SetLevel(LogLevel level) noexcept { instance().level_ = level; }
   int GetLevel() const noexcept { return instance().level_; }
 
-  bool GetColored() const noexcept { return instance().is_colored_; }
   void SetColored(bool is_colored) noexcept { is_colored_ = is_colored; }
+  bool GetColored() const noexcept { return instance().is_colored_; }
 
-  void AddMsg(const std::function<void()>& print_func) noexcept {
-    std::lock_guard<std::mutex> queue_lock(queue_mutex_);
-    queue_.push(print_func);
-    cv_.notify_one();
-  }
+  void SetFileDesc(FILE* fd) noexcept { fd_ = fd; }
+  FILE* GetFileDesc() const noexcept { return fd_;}
+  void CloseFile(FILE* fd = nullptr);
 
-  void Print() {
-    // start processing loop
-    do {
-      std::unique_lock<std::mutex> queue_lock(queue_mutex_);
-      cv_.wait_for(queue_lock, std::chrono::milliseconds(1000),
-                   [this] { return !this->queue_.empty(); });
-      while (!queue_.empty()) {
-        queue_.front()();
-        queue_.pop();
-      }
-    } while (!stop_loop_);
-  }
-
-  void Shutdown() noexcept {
-    // set flag to stop processing loop
-    stop_loop_ = true;
-    if (thread_.joinable()) {
-      thread_.join();
-    }
-  }
+  void Print();
+  void Shutdown();
 
  private:
-  Logger() {
-    stop_loop_ = false;
-    is_colored_ = true;
-    level_ = LogLevel::LOG_LEVEL_INFO;
-    thread_ = std::thread(&Logger::Print, this);
-  }
+  Logger();
 
   std::mutex queue_mutex_;
   std::condition_variable cv_;
@@ -124,6 +86,7 @@ class Logger {
   std::atomic<bool> is_colored_;
   std::atomic<int> level_;
   std::thread thread_;
+  std::atomic<FILE*> fd_;
 };
 
 }  // namespace yeti

@@ -28,6 +28,12 @@
 #include <iostream>
 #include <yeti/yeti.h>
 
+#ifdef _WIN32
+#  define TMP_DIR "C:\\Temp"
+#else
+#  define TMP_DIR "/tmp"
+#endif  // _WIN32
+
 
 void TestLog(yeti::LogLevel level) {
   yeti::SetLevel(level);
@@ -47,9 +53,12 @@ int main(int argc, char* argv[]) {
   TestLog(yeti::LOG_LEVEL_INFO);
 
   yeti::SetColored(false);
+  FILE* fd = ::fopen(TMP_DIR "/output_test.log", "w");
+  yeti::SetFileDesc(fd);
   TestLog(yeti::LOG_LEVEL_WARNING);
   TestLog(yeti::LOG_LEVEL_ERROR);
   TestLog(yeti::LOG_LEVEL_CRITICAL);
+  yeti::CloseFile();
 
   return 0;
 }

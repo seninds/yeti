@@ -50,6 +50,78 @@ inline bool GetColored() noexcept {
   return Logger::instance().GetColored();
 }
 
+inline void SetFileDesc(FILE* fd) noexcept {
+  Logger::instance().SetFileDesc(fd);
+}
+
+inline FILE* GetFileDesc() noexcept {
+  return Logger::instance().GetFileDesc();
+}
+
+inline void CloseFile(FILE* fd = nullptr) {
+  Logger::instance().CloseFile(fd);
+}
+
+
+inline Logger::Logger()
+    : stop_loop_(false),
+      is_colored_(true),
+      level_(LogLevel::LOG_LEVEL_INFO),
+      fd_(stderr) {
+  thread_ = std::thread(&Logger::Print, this);
+}
+
+inline Logger& Logger::instance() {
+  static Logger logger;
+
+  // register _Shutdown() at std::exit()
+  static bool is_atexit_registered = false;
+  static std::mutex registered_mutex;
+  if (!is_atexit_registered) {
+    std::lock_guard<std::mutex> lock(registered_mutex);
+    if (!is_atexit_registered) {
+      std::atexit(_Shutdown);
+      is_atexit_registered = true;
+    }
+  }
+  return logger;
+}
+
+inline void Logger::CloseFile(FILE* fd) {
+  if (fd == nullptr) {
+    fd = fd_;
+  }
+  auto close_func = [fd] { ::fclose(fd); };
+  this->PushToQueue(close_func);
+}
+
+inline void Logger::PushToQueue(const std::function<void()>& queue_func) {
+  std::lock_guard<std::mutex> queue_lock(queue_mutex_);
+  queue_.push(queue_func);
+  cv_.notify_one();
+}
+
+inline void Logger::Shutdown() {
+  // set flag to stop processing loop
+  stop_loop_ = true;
+  if (thread_.joinable()) {
+    thread_.join();
+  }
+}
+
+inline void Logger::Print() {
+  // start processing loop
+  do {
+    std::unique_lock<std::mutex> queue_lock(queue_mutex_);
+    cv_.wait_for(queue_lock, std::chrono::milliseconds(1000),
+                 [this] { return !this->queue_.empty(); });
+    while (!queue_.empty()) {
+      queue_.front()();
+      queue_.pop();
+    }
+  } while (!stop_loop_);
+}
+
 }  // namespace yeti
 
 #endif  // INC_YETI_YETI_INL_H_
