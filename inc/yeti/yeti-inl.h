@@ -91,8 +91,10 @@ inline void Logger::CloseFile(FILE* fd) {
   if (fd == nullptr) {
     fd = fd_;
   }
-  auto close_func = [fd] { ::fclose(fd); };
-  this->PushToQueue(close_func);
+  if (fd != stderr && fd != stdout && fd != stdin) {
+    auto close_func = [fd] { ::fclose(fd); };
+    this->PushToQueue(close_func);
+  }
 }
 
 inline void Logger::PushToQueue(const std::function<void()>& queue_func) {

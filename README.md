@@ -29,29 +29,41 @@ g++ -O3 -std=c++11 -Wall -Werror -pthread -I../inc -o output_test output_test.cc
 ## Example
 
 ```cpp
-#include <iostream>
 #include <yeti/yeti.h>
+
+#ifdef _WIN32
+#  define TMP_DIR "C:\\Temp"
+#else
+#  define TMP_DIR "/tmp"
+#endif  // _WIN32
 
 
 void TestLog(yeti::LogLevel level) {
-  yeti::SetLevel(level);
-  CRITICAL("critical output: %d", 0);
-  ERROR("error output: %f", 2.5F);
-  WARN("warning output: %s", "test text");
-  INFO("info output sizeof(int) = %zu", sizeof(int));
-  DEBUG("debug output %s", "test debug output");
+  yeti::SetLevel(level);  // set current log level
+
   TRACE("trace info: function trace");
-  CRITICAL("\n");
+  DEBUG("debug output %s", "test debug output");
+  INFO("info output sizeof(int) = %zu", sizeof(int));
+  WARN("warning output: %s", "test text");
+  ERROR("error output: %f", 2.5F);
+  CRITICAL("critical output: %d\n", 0);
 }
 
 
 int main(int argc, char* argv[]) {
+  yeti::SetColored(true);  // turn on log colorization
   TestLog(yeti::LOG_LEVEL_TRACE);
   TestLog(yeti::LOG_LEVEL_DEBUG);
+  yeti::SetColored(false);  // turn off log colorization
   TestLog(yeti::LOG_LEVEL_INFO);
+
+  FILE* fd = ::fopen(TMP_DIR "/output_test.log", "w");
+  yeti::SetFileDesc(fd);  // start logging into specified file
   TestLog(yeti::LOG_LEVEL_WARNING);
   TestLog(yeti::LOG_LEVEL_ERROR);
-  TestLog(yeti::LOG_LEVEL_CRITICAL);
+  yeti::SetColored(true);
+  TestLog(yeti::LOG_LEVEL_CRITICAL);  // check is a tty device currently using
+  yeti::CloseFile();
 
   return 0;
 }

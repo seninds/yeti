@@ -25,7 +25,6 @@
 // yeti - C++ lightweight threadsafe logging system
 // URL: https://github.com/seninds/yeti.git
 
-#include <iostream>
 #include <yeti/yeti.h>
 
 #ifdef _WIN32
@@ -36,7 +35,8 @@
 
 
 void TestLog(yeti::LogLevel level) {
-  yeti::SetLevel(level);
+  yeti::SetLevel(level);  // set current log level
+
   TRACE("trace info: function trace");
   DEBUG("debug output %s", "test debug output");
   INFO("info output sizeof(int) = %zu", sizeof(int));
@@ -47,17 +47,18 @@ void TestLog(yeti::LogLevel level) {
 
 
 int main(int argc, char* argv[]) {
-  yeti::SetColored(true);
+  yeti::SetColored(true);  // turn on log colorization
   TestLog(yeti::LOG_LEVEL_TRACE);
   TestLog(yeti::LOG_LEVEL_DEBUG);
+  yeti::SetColored(false);  // turn off log colorization
   TestLog(yeti::LOG_LEVEL_INFO);
 
-  yeti::SetColored(false);
   FILE* fd = ::fopen(TMP_DIR "/output_test.log", "w");
-  yeti::SetFileDesc(fd);
+  yeti::SetFileDesc(fd);  // start logging into specified file
   TestLog(yeti::LOG_LEVEL_WARNING);
   TestLog(yeti::LOG_LEVEL_ERROR);
-  TestLog(yeti::LOG_LEVEL_CRITICAL);
+  yeti::SetColored(true);
+  TestLog(yeti::LOG_LEVEL_CRITICAL);  // check is a tty device currently using
   yeti::CloseFile();
 
   return 0;
