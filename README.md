@@ -41,6 +41,28 @@ Just add __yeti.h__ into your project and start to use it:
 #include <yeti/yeti.h>
 ```
 Logging system has a lazy initialization, so if you don't use it you will not have any overhead.
+Just add into your code following macros:
+```cpp
+CRITICAL(msg_fmt, ...);
+ERROR(msg_fmt, ...);
+WARN(msg_fmt, ...);
+INFO(msg_fmt, ...);
+DEBUG(msg_fmt, ...);
+TRACE(msg_fmt, ...);
+```
+
+Logging control is based on yeti namespace functions:
+```cpp
+void SetLevel(LogLevel level) noexcept;
+int GetLevel() noexcept;
+void SetColored(bool is_colored) noexcept;
+bool GetColored() noexcept;
+void SetFileDesc(FILE* fd) noexcept;
+FILE* GetFileDesc() noexcept;
+void CloseFile(FILE* fd = nullptr);
+void SetFormatStr(const std::string& format_str) noexcept;
+std::string GetFormatStr() noexcept;
+```
 
 ## Requirements
 
