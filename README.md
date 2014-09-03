@@ -87,13 +87,14 @@ guys from GNU Compiler team will fix this bug in the nearest future.
 
 void TestLog(yeti::LogLevel level) {
   yeti::SetLevel(level);  // set current log level
-  TRACE("trace info: function trace");
-  DEBUG("debug output %s", "test debug output");
-  DEBUG("debug simple output");
-  INFO("info output sizeof(int) = %zu", sizeof(int));
-  WARN("warning output: %s", "test text");
-  ERROR("error output: %f", 2.5F);
-  CRITICAL("critical output: %d\n", 0);
+  TRACE("trace info");
+  std::string debug_str = "test debug output";
+  DEBUG("%s", debug_str.c_str());
+  INFO("is current log colored? %d", yeti::GetColored());
+  WARN("int size: %zu B", sizeof(int));
+  int size[3] = { 0, 1, 2 };
+  ERROR("array items: (%d, %d, %d)", size[0], size[1], size[2]);
+  CRITICAL("critical output\n");
 }
 
 
