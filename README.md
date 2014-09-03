@@ -25,7 +25,7 @@ You can tune log format:
 ```cpp
 yeti::SetFormatStr("[%(TAG)] [%(PID)] %(FILENAME): %(LINE): %(MSG)");
 ```
-Keywords to set log format:
+Keywords to set log format are:
 * %(TAG)      - tag of current logging level
 * %(FILENAME) - filename
 * %(FUNCNAME) - function name

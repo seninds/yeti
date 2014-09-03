@@ -63,7 +63,7 @@ inline FILE* GetFileDesc() noexcept {
   return Logger::instance().GetFileDesc();
 }
 
-inline void CloseFile(FILE* fd = nullptr) {
+inline void CloseFile(FILE* fd) {
   Logger::instance().CloseFile(fd);
 }
 
@@ -107,11 +107,11 @@ inline void Logger::CloseFile(FILE* fd) {
   }
   if (fd != stderr && fd != stdout && fd != stdin) {
     auto close_func = [fd] { ::fclose(fd); };
-    this->PushToQueue(close_func);
+    this->PushToLog(close_func);
   }
 }
 
-inline void Logger::PushToQueue(const std::function<void()>& queue_func) {
+inline void Logger::PushToLog(const std::function<void()>& queue_func) {
   std::lock_guard<std::mutex> queue_lock(queue_mutex_);
   queue_.push(queue_func);
   cv_.notify_one();

@@ -39,6 +39,7 @@
 
 namespace yeti {
 
+/** @brief Constants to set current logging level. */
 enum LogLevel {
   LOG_LEVEL_CRITICAL,
   LOG_LEVEL_ERROR,
@@ -48,9 +49,63 @@ enum LogLevel {
   LOG_LEVEL_TRACE
 };
 
+/** @brief Sets logging level. */
+void SetLevel(LogLevel level) noexcept;
+
+/** @brief Returns current logging level. */
+int GetLevel() noexcept;
+
+/** @brief Sets log colorization: "true" to set colored log. */
+void SetColored(bool is_colored) noexcept;
+
+/** @brief Returns current log colorization. */
+bool GetColored() noexcept;
+
+/**
+ * @brief Sets file descriptor to log into it.
+ *
+ * Logging is in separate thread, so you don't know when it is possible to close
+ * log file. To overcome this you should use yeti::CloseFIle(fd).
+ * This function adds to execution queue ::fclose(fd).
+ */
+void SetFileDesc(FILE* fd) noexcept;
+
+/** @brief Returns current log file descriptor. */
+FILE* GetFileDesc() noexcept;
+
+/**
+ * @brief Closes specified log file descriptor.
+ *
+ * If fd is equal to nullptr, current log file descriptor will be closed.
+ */
+void CloseFile(FILE* fd = nullptr);
+
+/**
+ * @brief Sets current log file format.
+ *
+ * Keywords to set log format are:
+ * <ul>
+ * <li> %(TAG)      - tag of current logging level </li>
+ * <li> %(FILENAME) - filename </li>
+ * <li> %(FUNCNAME) - function name </li>
+ * <li> %(PID)      - process ID </li>
+ * <li> %(TID)      - thread ID </li>
+ * <li> %(LINE)     - line number </li>
+ * <li> %(MSG)      - user message (format string) </li>
+ * </ul>
+ *
+ * You should always use %(MSG) in format string.
+ */
+void SetFormatStr(const std::string& format_str) noexcept;
+
+/** @brief Returns current format string. */
+std::string GetFormatStr() noexcept;
+
+
 // user should not see _Shutdown() in yeti namespace
 namespace { void _Shutdown(); }
 
+/** @brief Singleton to provide access to logger object. */
 class Logger {
  public:
   ~Logger() = default;
@@ -58,23 +113,38 @@ class Logger {
   Logger& operator=(const Logger&) = delete;
   Logger* operator &() = delete;
 
+  /** @brief Returns instance of logger object. */
   static Logger& instance();
-  void PushToQueue(const std::function<void()>& queue_func);
 
+  /** @brief Adds functor to log queue. */
+  void PushToLog(const std::function<void()>& queue_func);
+
+  /** @brief Sets logging level. */
   void SetLevel(LogLevel level) noexcept { instance().level_ = level; }
+  /** @brief Returns current logging level. */
   int GetLevel() const noexcept { return instance().level_; }
 
+  /** @brief Sets log colorization. */
   void SetColored(bool is_colored) noexcept { is_colored_ = is_colored; }
+  /** @brief Returns current log colorization. */
   bool GetColored() const noexcept { return instance().is_colored_; }
 
+  /** @brief Sets file log descriptor. */
   void SetFileDesc(FILE* fd) noexcept { fd_ = fd; }
+  /** @brief Returns current file log descriptor. */
   FILE* GetFileDesc() const noexcept { return fd_;}
+  /** @brief Closes specified log file descriptor. */
   void CloseFile(FILE* fd = nullptr);
 
+  /** @brief Sets specified log format. */
   void SetFormatStr(const std::string& format_str) noexcept;
+  /** @brief Returns current log format. */
   std::string GetFormatStr() const noexcept;
 
+  /** @brief Contains loop of logging thread. */
   void Print();
+
+  /** @brief Shutdowns logging. */
   void Shutdown();
 
  private:

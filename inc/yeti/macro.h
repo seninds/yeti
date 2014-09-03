@@ -64,7 +64,7 @@ std::string ParseFormatStr(
     } \
     std::fprintf(fd, final_fmt.c_str(), ##__VA_ARGS__); \
   }; \
-  yeti::Logger::instance().PushToQueue(print_func); \
+  yeti::Logger::instance().PushToLog(print_func); \
 }
 
 #define ERROR(msg_fmt, ...) { \
@@ -90,7 +90,7 @@ std::string ParseFormatStr(
       } \
       std::fprintf(fd, final_fmt.c_str(), ##__VA_ARGS__); \
     }; \
-    yeti::Logger::instance().PushToQueue(print_func); \
+    yeti::Logger::instance().PushToLog(print_func); \
   } \
 }
 
@@ -117,7 +117,7 @@ std::string ParseFormatStr(
       } \
       std::fprintf(fd, final_fmt.c_str(), ##__VA_ARGS__); \
     }; \
-    yeti::Logger::instance().PushToQueue(print_func); \
+    yeti::Logger::instance().PushToLog(print_func); \
   } \
 }
 
@@ -144,7 +144,7 @@ std::string ParseFormatStr(
       } \
       std::fprintf(fd, final_fmt.c_str(), ##__VA_ARGS__); \
     }; \
-    yeti::Logger::instance().PushToQueue(print_func); \
+    yeti::Logger::instance().PushToLog(print_func); \
   } \
 }
 
@@ -171,7 +171,7 @@ std::string ParseFormatStr(
       } \
       std::fprintf(fd, final_fmt.c_str(), ##__VA_ARGS__); \
     }; \
-    yeti::Logger::instance().PushToQueue(print_func); \
+    yeti::Logger::instance().PushToLog(print_func); \
   } \
 }
 
@@ -193,7 +193,7 @@ std::string ParseFormatStr(
                               + "\n"; \
       std::fprintf(fd, final_fmt.c_str(), ##__VA_ARGS__); \
     }; \
-    yeti::Logger::instance().PushToQueue(print_func); \
+    yeti::Logger::instance().PushToLog(print_func); \
   } \
 }
 
