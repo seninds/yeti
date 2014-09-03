@@ -29,6 +29,7 @@
 #define INC_YETI_MACRO_H_
 
 #include <unistd.h>
+#include <cstdio>
 #include <thread>
 
 #if defined(__clang__)
@@ -37,164 +38,107 @@
 #  pragma GCC diagnostic ignored "-Wformat-security"
 #endif  // ignored "-Wformat-security"
 
-std::string ParseFormatStr(
-    const std::string format_str, const std::string& tag_str,
-    const std::string& filename, const std::string& func_name, pid_t pid,
-    std::thread::id tid, int line, const std::string& msg_fmt);
+template <typename... Args>
+void _CopyArgs(const std::string& tag_str, const std::string& filename,
+               const std::string& func_name, int line,
+               const std::string& msg_fmt, Args... args);
 
 #define CRITICAL(msg_fmt, ...) { \
-  std::string format_str = yeti::Logger::instance().GetFormatStr(); \
   std::string tag_str = "CRITICAL"; \
+  std::string tag_color = YETI_LRED; \
   std::string filename = __FILE__; \
   std::string func_name(__func__); \
-  pid_t pid = getpid(); \
-  std::thread::id tid = std::this_thread::get_id(); \
+  std::string fmt = msg_fmt; \
   int line = __LINE__; \
-  \
-  bool is_colored = yeti::Logger::instance().GetColored(); \
-  FILE *fd = yeti::Logger::instance().GetFileDesc(); \
-  \
-  auto print_func = [format_str, tag_str, filename, func_name, pid, tid, line, \
-                     is_colored, fd] { \
-    std::string final_fmt = ParseFormatStr(format_str, tag_str, filename, \
-                                           func_name, pid, tid, line, msg_fmt) \
-                            + "\n";\
-    if (isatty(fileno(fd)) != 0 && is_colored) { \
-      final_fmt = std::string(YETI_LRED) + final_fmt + std::string(YETI_RESET);\
-    } \
-    std::fprintf(fd, final_fmt.c_str(), ##__VA_ARGS__); \
-  }; \
-  yeti::Logger::instance().PushToLog(print_func); \
+  _CopyArgs(tag_str, tag_color, filename, func_name, line, fmt, ##__VA_ARGS__); \
 }
 
 #define ERROR(msg_fmt, ...) { \
   if (yeti::Logger::instance().GetLevel() >= yeti::LOG_LEVEL_ERROR) { \
-    std::string format_str = yeti::Logger::instance().GetFormatStr(); \
     std::string tag_str = "ERROR"; \
+    std::string tag_color = YETI_LPURPLE; \
     std::string filename = __FILE__; \
     std::string func_name(__func__); \
-    pid_t pid = getpid(); \
-    std::thread::id tid = std::this_thread::get_id(); \
+    std::string fmt = msg_fmt; \
     int line = __LINE__; \
-    \
-    bool is_colored = yeti::Logger::instance().GetColored(); \
-    FILE *fd = yeti::Logger::instance().GetFileDesc(); \
-    \
-    auto print_func = [format_str, tag_str, filename, func_name, pid, tid, line, \
-                       is_colored, fd] { \
-      std::string final_fmt = ParseFormatStr(format_str, tag_str, filename, \
-                                             func_name, pid, tid, line, msg_fmt) \
-                              + "\n";\
-      if (isatty(fileno(fd)) != 0 && is_colored) { \
-        final_fmt = std::string(YETI_LPURPLE) + final_fmt + std::string(YETI_RESET);\
-      } \
-      std::fprintf(fd, final_fmt.c_str(), ##__VA_ARGS__); \
-    }; \
-    yeti::Logger::instance().PushToLog(print_func); \
+    _CopyArgs(tag_str, tag_color, filename, func_name, line, fmt, ##__VA_ARGS__); \
   } \
 }
 
 #define WARN(msg_fmt, ...) { \
   if (yeti::Logger::instance().GetLevel() >= yeti::LOG_LEVEL_WARNING) { \
-    std::string format_str = yeti::Logger::instance().GetFormatStr(); \
     std::string tag_str = "WARNING"; \
+    std::string tag_color = YETI_YELLOW; \
     std::string filename = __FILE__; \
     std::string func_name(__func__); \
-    pid_t pid = getpid(); \
-    std::thread::id tid = std::this_thread::get_id(); \
+    std::string fmt = msg_fmt; \
     int line = __LINE__; \
-    \
-    bool is_colored = yeti::Logger::instance().GetColored(); \
-    FILE *fd = yeti::Logger::instance().GetFileDesc(); \
-    \
-    auto print_func = [format_str, tag_str, filename, func_name, pid, tid, line, \
-                       is_colored, fd] { \
-      std::string final_fmt = ParseFormatStr(format_str, tag_str, filename, \
-                                             func_name, pid, tid, line, msg_fmt) \
-                              + "\n";\
-      if (isatty(fileno(fd)) != 0 && is_colored) { \
-        final_fmt = std::string(YETI_YELLOW) + final_fmt + std::string(YETI_RESET);\
-      } \
-      std::fprintf(fd, final_fmt.c_str(), ##__VA_ARGS__); \
-    }; \
-    yeti::Logger::instance().PushToLog(print_func); \
+    _CopyArgs(tag_str, tag_color, filename, func_name, line, fmt, ##__VA_ARGS__); \
   } \
 }
 
 #define INFO(msg_fmt, ...) { \
   if (yeti::Logger::instance().GetLevel() >= yeti::LOG_LEVEL_INFO) { \
-    std::string format_str = yeti::Logger::instance().GetFormatStr(); \
     std::string tag_str = "INFO"; \
+    std::string tag_color = YETI_LGREEN; \
     std::string filename = __FILE__; \
     std::string func_name(__func__); \
-    pid_t pid = getpid(); \
-    std::thread::id tid = std::this_thread::get_id(); \
+    std::string fmt = msg_fmt; \
     int line = __LINE__; \
-    \
-    bool is_colored = yeti::Logger::instance().GetColored(); \
-    FILE *fd = yeti::Logger::instance().GetFileDesc(); \
-    \
-    auto print_func = [format_str, tag_str, filename, func_name, pid, tid, line, \
-                       is_colored, fd] { \
-      std::string final_fmt = ParseFormatStr(format_str, tag_str, filename, \
-                                             func_name, pid, tid, line, msg_fmt) \
-                              + "\n";\
-      if (isatty(fileno(fd)) != 0 && is_colored) { \
-        final_fmt = std::string(YETI_LGREEN) + final_fmt + std::string(YETI_RESET);\
-      } \
-      std::fprintf(fd, final_fmt.c_str(), ##__VA_ARGS__); \
-    }; \
-    yeti::Logger::instance().PushToLog(print_func); \
+    _CopyArgs(tag_str, tag_color, filename, func_name, line, fmt, ##__VA_ARGS__); \
   } \
 }
 
 #define DEBUG(msg_fmt, ...) { \
   if (yeti::Logger::instance().GetLevel() >= yeti::LOG_LEVEL_DEBUG) { \
-    std::string format_str = yeti::Logger::instance().GetFormatStr(); \
     std::string tag_str = "DEBUG"; \
+    std::string tag_color = YETI_WHITE; \
     std::string filename = __FILE__; \
     std::string func_name(__func__); \
-    pid_t pid = getpid(); \
-    std::thread::id tid = std::this_thread::get_id(); \
+    std::string fmt = msg_fmt; \
     int line = __LINE__; \
-    \
-    bool is_colored = yeti::Logger::instance().GetColored(); \
-    FILE *fd = yeti::Logger::instance().GetFileDesc(); \
-    \
-    auto print_func = [format_str, tag_str, filename, func_name, pid, tid, line, \
-                       is_colored, fd] { \
-      std::string final_fmt = ParseFormatStr(format_str, tag_str, filename, \
-                                             func_name, pid, tid, line, msg_fmt) \
-                              + "\n";\
-      if (isatty(fileno(fd)) != 0 && is_colored) { \
-        final_fmt = std::string(YETI_WHITE) + final_fmt + std::string(YETI_RESET);\
-      } \
-      std::fprintf(fd, final_fmt.c_str(), ##__VA_ARGS__); \
-    }; \
-    yeti::Logger::instance().PushToLog(print_func); \
+    _CopyArgs(tag_str, tag_color, filename, func_name, line, fmt, ##__VA_ARGS__); \
   } \
 }
 
 #define TRACE(msg_fmt, ...) { \
   if (yeti::Logger::instance().GetLevel() >= yeti::LOG_LEVEL_TRACE) { \
-    std::string format_str = yeti::Logger::instance().GetFormatStr(); \
     std::string tag_str = "TRACE"; \
+    std::string tag_color = ""; \
     std::string filename = __FILE__; \
     std::string func_name(__func__); \
-    pid_t pid = getpid(); \
-    std::thread::id tid = std::this_thread::get_id(); \
+    std::string fmt = msg_fmt; \
     int line = __LINE__; \
-    \
-    FILE *fd = yeti::Logger::instance().GetFileDesc(); \
-    auto print_func = [format_str, tag_str, filename, func_name, pid, tid, line, \
-                       fd] { \
-      std::string final_fmt = ParseFormatStr(format_str, tag_str, filename, \
-                                             func_name, pid, tid, line, msg_fmt) \
-                              + "\n"; \
-      std::fprintf(fd, final_fmt.c_str(), ##__VA_ARGS__); \
-    }; \
-    yeti::Logger::instance().PushToLog(print_func); \
+    _CopyArgs(tag_str, tag_color, filename, func_name, line, fmt, ##__VA_ARGS__); \
   } \
+}
+
+std::string ParseFormatStr(
+    const std::string format_str, const std::string& tag_str,
+    const std::string& filename, const std::string& func_name, pid_t pid,
+    std::thread::id tid, int line, const std::string& msg_fmt);
+
+template <typename... Args>
+void _CopyArgs(const std::string& tag_str, const std::string& tag_color,
+               const std::string& filename, const std::string& func_name,
+               int line, const std::string& msg_fmt, Args ... args) {
+  std::string format_str = yeti::Logger::instance().GetFormatStr();
+  pid_t pid = getpid();
+  std::thread::id tid = std::this_thread::get_id();
+  FILE *fd = yeti::Logger::instance().GetFileDesc();
+  bool is_colored = yeti::Logger::instance().GetColored();
+
+  auto print_func = [format_str, tag_str, tag_color, filename, func_name, pid,
+                     tid, line, fd, is_colored, msg_fmt, args...] {
+    std::string final_fmt = ParseFormatStr(format_str, tag_str, filename,
+                                           func_name, pid, tid, line, msg_fmt)
+                            + "\n";
+    if (isatty(fileno(fd)) != 0 && is_colored) {
+      final_fmt = tag_color + final_fmt + std::string(YETI_RESET);
+    }
+    std::fprintf(fd, final_fmt.c_str(), args...);
+  };
+  yeti::Logger::instance().PushToLog(print_func);
 }
 
 inline std::string ParseFormatStr(

@@ -77,8 +77,13 @@
 /// <b>Yeti</b> uses C++11 and multithreading, so you should add
 /// "-std=c++11 -pthread" compile options:
 /// @code
-/// g++ -O3 -std=c++11 -Wall -Werror -pthread -I../inc -o output_test output_test.cc
+/// clang++ -O3 -std=c++11 -Wall -Werror -pthread -I../inc -o output_test output_test.cc
 /// @endcode
+///
+/// GCC has a bug with lambda (<a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=41933">
+/// lambda doesn't capture parameter pack</a>),
+/// so you have to use clang (v.3.5 or later) to use <b>Yeti</b>. Hope
+/// guys from GNU Compiler team will fix this bug in the nearest future.
 ///
 /// @section Example
 ///
