@@ -28,6 +28,11 @@
 #ifndef INC_YETI_YETI_INL_H_
 #define INC_YETI_YETI_INL_H_
 
+#include <cstdio>
+#include <cstdlib>
+#include <map>
+#include <sstream>
+
 namespace yeti {
 
 namespace {
@@ -62,11 +67,20 @@ inline void CloseFile(FILE* fd = nullptr) {
   Logger::instance().CloseFile(fd);
 }
 
+inline void SetFormatStr(const std::string& format_str) noexcept {
+  Logger::instance().SetFormatStr(format_str);
+}
+
+inline std::string GetFormatStr() noexcept {
+  return Logger::instance().GetFormatStr();
+}
+
 
 inline Logger::Logger()
     : stop_loop_(false),
       is_colored_(true),
       level_(LogLevel::LOG_LEVEL_INFO),
+      format_str_("[%(TAG)] %(FILENAME): %(LINE): %(MSG)"),
       fd_(stderr) {
   thread_ = std::thread(&Logger::Print, this);
 }
@@ -122,6 +136,16 @@ inline void Logger::Print() {
       queue_.pop();
     }
   } while (!stop_loop_);
+}
+
+inline void Logger::SetFormatStr(const std::string& format_str) noexcept {
+  std::lock_guard<std::mutex> lock(settings_mutex_);
+  format_str_ = format_str;
+}
+
+inline std::string Logger::GetFormatStr() const noexcept {
+  std::lock_guard<std::mutex> lock(settings_mutex_);
+  return format_str_;
 }
 
 }  // namespace yeti

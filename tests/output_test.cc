@@ -27,18 +27,11 @@
 
 #include <yeti/yeti.h>
 
-#ifdef _WIN32
-#  define TMP_DIR "C:\\Temp"
-#else
-#  define TMP_DIR "/tmp"
-#endif  // _WIN32
-
-
 void TestLog(yeti::LogLevel level) {
   yeti::SetLevel(level);  // set current log level
-
   TRACE("trace info: function trace");
   DEBUG("debug output %s", "test debug output");
+  DEBUG("debug simple output");
   INFO("info output sizeof(int) = %zu", sizeof(int));
   WARN("warning output: %s", "test text");
   ERROR("error output: %f", 2.5F);
@@ -50,12 +43,15 @@ int main(int argc, char* argv[]) {
   yeti::SetColored(true);  // turn on log colorization
   TestLog(yeti::LOG_LEVEL_TRACE);
   TestLog(yeti::LOG_LEVEL_DEBUG);
+
   yeti::SetColored(false);  // turn off log colorization
+  yeti::SetFormatStr("[%(TAG)] [%(PID)] %(FILENAME): %(LINE): %(MSG)");
   TestLog(yeti::LOG_LEVEL_INFO);
 
-  FILE* fd = ::fopen(TMP_DIR "/output_test.log", "w");
+  FILE* fd = ::fopen("output_test.log", "w");
   yeti::SetFileDesc(fd);  // start logging into specified file
   TestLog(yeti::LOG_LEVEL_WARNING);
+  yeti::SetFormatStr("[%(TAG)] [%(PID):%(TID)] %(FUNCNAME)(): %(MSG)");
   TestLog(yeti::LOG_LEVEL_ERROR);
   yeti::SetColored(true);
   TestLog(yeti::LOG_LEVEL_CRITICAL);  // check is a tty device currently using

@@ -28,13 +28,11 @@
 #ifndef INC_YETI_YETI_H_
 #define INC_YETI_YETI_H_
 
-#include <unistd.h>
-#include <cstdio>
-#include <cstdlib>
 #include <atomic>
 #include <condition_variable>
 #include <mutex>
 #include <queue>
+#include <string>
 #include <thread>
 
 #include <yeti/color.h>
@@ -73,18 +71,23 @@ class Logger {
   FILE* GetFileDesc() const noexcept { return fd_;}
   void CloseFile(FILE* fd = nullptr);
 
+  void SetFormatStr(const std::string& format_str) noexcept;
+  std::string GetFormatStr() const noexcept;
+
   void Print();
   void Shutdown();
 
  private:
   Logger();
 
-  std::mutex queue_mutex_;
+  mutable std::mutex queue_mutex_;
+  mutable std::mutex settings_mutex_;
   std::condition_variable cv_;
   std::queue<std::function<void()>> queue_;
   std::atomic<bool> stop_loop_;
   std::atomic<bool> is_colored_;
   std::atomic<int> level_;
+  std::string format_str_;
   std::thread thread_;
   std::atomic<FILE*> fd_;
 };
