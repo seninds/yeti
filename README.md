@@ -1,5 +1,5 @@
-C++ logging system
-==================
+Yeti: C++ lightweight threadsafe logging system
+===================================
 
 __Yeti__ is lightweight threadsafe logging system, which is running in separate thread,
 so it can't slow your application. 

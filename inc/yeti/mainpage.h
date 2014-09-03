@@ -1,6 +1,6 @@
-/// @mainpage Yeti Project
+/// @mainpage Yeti
 ///
-/// C++ logging system
+/// Yeti: C++ lightweight threadsafe logging system
 /// ==================
 ///
 /// <b>Yeti</b> is lightweight threadsafe logging system, which is running in
