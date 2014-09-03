@@ -37,6 +37,10 @@
 
 #include <yeti/color.h>
 
+/**
+ * @namespace yeti
+ * <b>yeti</b> namespace contains all necessary functions to control logging.
+ */
 namespace yeti {
 
 /** @brief Constants to set current logging level. */

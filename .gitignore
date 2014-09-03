@@ -2,5 +2,11 @@
 *.o
 *.out
 *.log
+*.html
+*.png
+*.css
+*.js
 Debug/
 Release/
+html/
+latex/
