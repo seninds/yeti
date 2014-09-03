@@ -1,9 +1,9 @@
 /// @mainpage Yeti
 ///
-/// Yeti: C++ lightweight threadsafe logging system
+/// Yeti: C++ lightweight threadsafe logging
 /// ==================
 ///
-/// <b>Yeti</b> is lightweight threadsafe logging system, which is running in
+/// <b>Yeti</b> is lightweight threadsafe logging, which is running in
 /// separate thread, so it can't slow your application.
 ///
 /// It has 6 logging levels:
@@ -44,7 +44,7 @@
 /// Just add content of <i>"inc/yeti"</i> to your project, add <b>yeti.h</b>
 /// into your source files and start to use <b>Yeti</b> log.
 ///
-/// Logging system has a lazy initialization, so if you don't use it you will
+/// Logging has a lazy initialization, so if you don't use it you will
 /// not have any overhead. Just add into your code following macros:
 /// @code{.cpp}
 /// CRITICAL(msg_fmt, ...);
@@ -80,8 +80,9 @@
 /// clang++ -O3 -std=c++11 -Wall -Werror -pthread -I../inc -o output_test output_test.cc
 /// @endcode
 ///
-/// GCC has a bug with lambda (<a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=41933">
-/// lambda doesn't capture parameter pack</a>),
+/// GCC has a bug with lambda
+/// (<a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=41933">lambda
+/// doesn't capture parameter pack</a>),
 /// so you have to use clang (v.3.5 or later) to use <b>Yeti</b>. Hope
 /// guys from GNU Compiler team will fix this bug in the nearest future.
 ///

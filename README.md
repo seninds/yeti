@@ -1,7 +1,7 @@
-Yeti: C++ lightweight threadsafe logging system
+Yeti: C++ lightweight threadsafe logging
 ===================================
 
-__Yeti__ is lightweight threadsafe logging system, which is running in separate thread,
+__Yeti__ is lightweight threadsafe logging, which is running in separate thread,
 so it can't slow your application. 
 
 It has 6 logging levels:
@@ -39,7 +39,7 @@ Keywords to set log format are:
 Just add content of _"inc/yeti"_ to your project, add __yeti.h__
 into your source files and start to use __Yeti__ log.
 
-Logging system has a lazy initialization, so if you don't use it you will not have any overhead.
+Logging has a lazy initialization, so if you don't use it you will not have any overhead.
 Just add into your code following macros:
 ```cpp
 CRITICAL(msg_fmt, ...);
@@ -73,8 +73,9 @@ __Yeti__ uses C++11 and multithreading, so you should add "-std=c++11 -pthread" 
 clang++ -O3 -std=c++11 -Wall -Werror -pthread -I../inc -o output_test output_test.cc
 ```
 
-GCC has a bug with lambda (<a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=41933">
-lambda doesn't capture parameter pack</a>),
+GCC has a bug with lambda
+(<a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=41933">lambda
+doesn't capture parameter pack</a>),
 so you have to use clang (v.3.5 or later) to use <b>Yeti</b>. Hope
 guys from GNU Compiler team will fix this bug in the nearest future.
 
