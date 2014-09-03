@@ -41,10 +41,8 @@
 ///
 /// @section Usage
 ///
-/// Just add <b>yeti.h</b> into your project and start to use it:
-/// @code{.cpp}
-/// #include <yeti/yeti.h>
-/// @endcode
+/// Just add content of <i>"inc/yeti"</i> to your project, add <b>yeti.h</b>
+/// into your source files and start to use <b>Yeti</b> log.
 ///
 /// Logging system has a lazy initialization, so if you don't use it you will
 /// not have any overhead. Just add into your code following macros:
@@ -59,15 +57,17 @@
 ///
 /// Logging control is based on yeti namespace functions:
 /// @code{.cpp}
-/// void SetLevel(LogLevel level) noexcept;
-/// int GetLevel() noexcept;
-/// void SetColored(bool is_colored) noexcept;
-/// bool GetColored() noexcept;
-/// void SetFileDesc(FILE* fd) noexcept;
-/// FILE* GetFileDesc() noexcept;
-/// void CloseFile(FILE* fd = nullptr);
-/// void SetFormatStr(const std::string& format_str) noexcept;
-/// std::string GetFormatStr() noexcept;
+/// namespace yeti {
+///   void SetLevel(LogLevel level) noexcept;
+///   int GetLevel() noexcept;
+///   void SetColored(bool is_colored) noexcept;
+///   bool GetColored() noexcept;
+///   void SetFileDesc(FILE* fd) noexcept;
+///   FILE* GetFileDesc() noexcept;
+///   void CloseFile(FILE* fd = nullptr);
+///   void SetFormatStr(const std::string& format_str) noexcept;
+///   std::string GetFormatStr() noexcept;
+/// }
 /// @endcode
 ///
 /// More information you can get <a href="namespaceyeti.html">here</a>.

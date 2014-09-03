@@ -36,10 +36,9 @@ Keywords to set log format are:
 
 ## Usage
 
-Just add __yeti.h__ into your project and start to use it:
-```cpp
-#include <yeti/yeti.h>
-```
+Just add content of _"inc/yeti"_ to your project, add __yeti.h__
+into your source files and start to use __Yeti__ log.
+
 Logging system has a lazy initialization, so if you don't use it you will not have any overhead.
 Just add into your code following macros:
 ```cpp
@@ -53,15 +52,17 @@ TRACE(msg_fmt, ...);
 
 Logging control is based on yeti namespace functions:
 ```cpp
-void SetLevel(LogLevel level) noexcept;
-int GetLevel() noexcept;
-void SetColored(bool is_colored) noexcept;
-bool GetColored() noexcept;
-void SetFileDesc(FILE* fd) noexcept;
-FILE* GetFileDesc() noexcept;
-void CloseFile(FILE* fd = nullptr);
-void SetFormatStr(const std::string& format_str) noexcept;
-std::string GetFormatStr() noexcept;
+namespace yeti {
+  void SetLevel(LogLevel level) noexcept;
+  int GetLevel() noexcept;
+  void SetColored(bool is_colored) noexcept;
+  bool GetColored() noexcept;
+  void SetFileDesc(FILE* fd) noexcept;
+  FILE* GetFileDesc() noexcept;
+  void CloseFile(FILE* fd = nullptr);
+  void SetFormatStr(const std::string& format_str) noexcept;
+  std::string GetFormatStr() noexcept;
+}
 ```
 
 ## Requirements
