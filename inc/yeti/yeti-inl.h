@@ -36,42 +36,42 @@
 namespace yeti {
 
 namespace {
-  inline void _Shutdown() { yeti::Logger::instance().Shutdown(); }
+  inline void _ShutdownLog() { yeti::Logger::instance().Shutdown(); }
 }
 
-inline void SetLevel(LogLevel level) noexcept {
+inline void SetLogLevel(LogLevel level) noexcept {
   Logger::instance().SetLevel(level);
 }
 
-inline int GetLevel() noexcept {
+inline int GetLogLevel() noexcept {
   return Logger::instance().GetLevel();
 }
 
-inline void SetColored(bool is_colored) noexcept {
-  Logger::instance().SetColored(is_colored);
+inline void SetLogColorization(bool is_colored) noexcept {
+  Logger::instance().SetColorization(is_colored);
 }
 
-inline bool GetColored() noexcept {
-  return Logger::instance().GetColored();
+inline bool GetLogColorization() noexcept {
+  return Logger::instance().GetColorization();
 }
 
-inline void SetFileDesc(FILE* fd) noexcept {
+inline void SetLogFileDesc(FILE* fd) noexcept {
   Logger::instance().SetFileDesc(fd);
 }
 
-inline FILE* GetFileDesc() noexcept {
+inline FILE* GetLogFileDesc() noexcept {
   return Logger::instance().GetFileDesc();
 }
 
-inline void CloseFile(FILE* fd) {
-  Logger::instance().CloseFile(fd);
+inline void CloseLogFileDesc(FILE* fd) {
+  Logger::instance().CloseFileDesc(fd);
 }
 
-inline void SetFormatStr(const std::string& format_str) noexcept {
+inline void SetLogFormatStr(const std::string& format_str) noexcept {
   Logger::instance().SetFormatStr(format_str);
 }
 
-inline std::string GetFormatStr() noexcept {
+inline std::string GetLogFormatStr() noexcept {
   return Logger::instance().GetFormatStr();
 }
 
@@ -82,7 +82,7 @@ inline Logger::Logger()
       level_(LogLevel::LOG_LEVEL_INFO),
       format_str_("[%(TAG)] %(FILENAME): %(LINE): %(MSG)"),
       fd_(stderr) {
-  thread_ = std::thread(&Logger::Print, this);
+  thread_ = std::thread(&Logger::ProcessingLoop, this);
 }
 
 inline Logger& Logger::instance() {
@@ -94,24 +94,24 @@ inline Logger& Logger::instance() {
   if (!is_atexit_registered) {
     std::lock_guard<std::mutex> lock(registered_mutex);
     if (!is_atexit_registered) {
-      std::atexit(_Shutdown);
+      std::atexit(_ShutdownLog);
       is_atexit_registered = true;
     }
   }
   return logger;
 }
 
-inline void Logger::CloseFile(FILE* fd) {
+inline void Logger::CloseFileDesc(FILE* fd) {
   if (fd == nullptr) {
     fd = fd_;
   }
   if (fd != stderr && fd != stdout && fd != stdin) {
     auto close_func = [fd] { ::fclose(fd); };
-    this->PushToLog(close_func);
+    this->EnqueueTask(close_func);
   }
 }
 
-inline void Logger::PushToLog(const std::function<void()>& queue_func) {
+inline void Logger::EnqueueTask(const std::function<void()>& queue_func) {
   std::lock_guard<std::mutex> queue_lock(queue_mutex_);
   queue_.push(queue_func);
   cv_.notify_one();
@@ -125,7 +125,7 @@ inline void Logger::Shutdown() {
   }
 }
 
-inline void Logger::Print() {
+inline void Logger::ProcessingLoop() {
   // start processing loop
   do {
     std::unique_lock<std::mutex> queue_lock(queue_mutex_);

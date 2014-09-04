@@ -54,16 +54,16 @@ enum LogLevel {
 };
 
 /** @brief Sets logging level. */
-void SetLevel(LogLevel level) noexcept;
+void SetLogLevel(LogLevel level) noexcept;
 
 /** @brief Returns current logging level. */
-int GetLevel() noexcept;
+int GetLogLevel() noexcept;
 
 /** @brief Sets log colorization: "true" to set colored log. */
-void SetColored(bool is_colored) noexcept;
+void SetLogColorization(bool is_colored) noexcept;
 
 /** @brief Returns current log colorization. */
-bool GetColored() noexcept;
+bool GetLogColorization() noexcept;
 
 /**
  * @brief Sets file descriptor to log into it.
@@ -72,17 +72,17 @@ bool GetColored() noexcept;
  * log file. To overcome this you should use yeti::CloseFIle(fd).
  * This function adds to execution queue ::fclose(fd).
  */
-void SetFileDesc(FILE* fd) noexcept;
+void SetLogFileDesc(FILE* fd) noexcept;
 
 /** @brief Returns current log file descriptor. */
-FILE* GetFileDesc() noexcept;
+FILE* GetLogFileDesc() noexcept;
 
 /**
  * @brief Closes specified log file descriptor.
  *
  * If fd is equal to nullptr, current log file descriptor will be closed.
  */
-void CloseFile(FILE* fd = nullptr);
+void CloseLogFileDesc(FILE* fd = nullptr);
 
 /**
  * @brief Sets current log file format.
@@ -100,14 +100,14 @@ void CloseFile(FILE* fd = nullptr);
  *
  * You should always use %(MSG) in format string.
  */
-void SetFormatStr(const std::string& format_str) noexcept;
+void SetLogFormatStr(const std::string& format_str) noexcept;
 
 /** @brief Returns current format string. */
-std::string GetFormatStr() noexcept;
+std::string GetLogFormatStr() noexcept;
 
 
 // user should not see _Shutdown() in yeti namespace
-namespace { void _Shutdown(); }
+namespace { void _ShutdownLog(); }
 
 /** @brief Singleton to provide access to logger object. */
 class Logger {
@@ -121,7 +121,7 @@ class Logger {
   static Logger& instance();
 
   /** @brief Adds functor to log queue. */
-  void PushToLog(const std::function<void()>& queue_func);
+  void EnqueueTask(const std::function<void()>& queue_func);
 
   /** @brief Sets logging level. */
   void SetLevel(LogLevel level) noexcept { instance().level_ = level; }
@@ -129,16 +129,16 @@ class Logger {
   int GetLevel() const noexcept { return instance().level_; }
 
   /** @brief Sets log colorization. */
-  void SetColored(bool is_colored) noexcept { is_colored_ = is_colored; }
+  void SetColorization(bool is_colored) noexcept { is_colored_ = is_colored; }
   /** @brief Returns current log colorization. */
-  bool GetColored() const noexcept { return instance().is_colored_; }
+  bool GetColorization() const noexcept { return instance().is_colored_; }
 
   /** @brief Sets file log descriptor. */
   void SetFileDesc(FILE* fd) noexcept { fd_ = fd; }
   /** @brief Returns current file log descriptor. */
   FILE* GetFileDesc() const noexcept { return fd_;}
   /** @brief Closes specified log file descriptor. */
-  void CloseFile(FILE* fd = nullptr);
+  void CloseFileDesc(FILE* fd = nullptr);
 
   /** @brief Sets specified log format. */
   void SetFormatStr(const std::string& format_str) noexcept;
@@ -146,7 +146,7 @@ class Logger {
   std::string GetFormatStr() const noexcept;
 
   /** @brief Contains loop of logging thread. */
-  void Print();
+  void ProcessingLoop();
 
   /** @brief Shutdowns logging. */
   void Shutdown();

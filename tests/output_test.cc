@@ -28,40 +28,40 @@
 #include <yeti/yeti.h>
 
 void TestLog(yeti::LogLevel level) {
-  yeti::SetLevel(level);  // set current log level
+  yeti::SetLogLevel(level);  // set current log level
 
-  TRACE("trace info");
+  TRACE("some trace info");
 
-  std::string debug_str = "test debug output";
-  DEBUG("%s", debug_str.c_str());
+  std::string debug_str = "test string";
+  DEBUG("print string: %s", debug_str.c_str());
 
-  INFO("is current log colored? %d", yeti::GetColored());
-  WARN("int size: %zu B", sizeof(int));
+  INFO("is current log colored? %d", yeti::GetLogColorization());
+  WARN("current file descriptor: %d", fileno(yeti::GetLogFileDesc()));
 
-  int size[3] = { 0, 1, 2 };
-  ERROR("array items: (%d, %d, %d)", size[0], size[1], size[2]);
+  int array[3] = { 0, 1, 2 };
+  ERROR("print array elements: (%d, %d, %d)", array[0], array[1], array[2]);
 
-  CRITICAL("critical output\n");
+  CRITICAL("current log level: %d\n", yeti::GetLogLevel());
 }
 
 
 int main(int argc, char* argv[]) {
-  yeti::SetColored(true);  // turn on log colorization
+  yeti::SetLogColorization(true);  // turn on log colorization
   TestLog(yeti::LOG_LEVEL_TRACE);
   TestLog(yeti::LOG_LEVEL_DEBUG);
 
-  yeti::SetColored(false);  // turn off log colorization
-  yeti::SetFormatStr("[%(TAG)] [%(PID)] %(FILENAME): %(LINE): %(MSG)");
+  yeti::SetLogColorization(false);  // turn off log colorization
+  yeti::SetLogFormatStr("[%(TAG)] [%(PID)] %(FILENAME): %(LINE): %(MSG)");
   TestLog(yeti::LOG_LEVEL_INFO);
 
   FILE* fd = ::fopen("output_test.log", "w");
-  yeti::SetFileDesc(fd);  // start logging into specified file
+  yeti::SetLogFileDesc(fd);  // start logging into specified file
   TestLog(yeti::LOG_LEVEL_WARNING);
-  yeti::SetFormatStr("[%(TAG)] [%(PID):%(TID)] %(FUNCNAME)(): %(MSG)");
+  yeti::SetLogFormatStr("[%(TAG)] [%(PID):%(TID)] %(FUNCNAME)(): %(MSG)");
   TestLog(yeti::LOG_LEVEL_ERROR);
-  yeti::SetColored(true);
+  yeti::SetLogColorization(true);
   TestLog(yeti::LOG_LEVEL_CRITICAL);  // check is a tty device currently using
-  yeti::CloseFile();
+  yeti::CloseLogFileDesc();
 
   return 0;
 }

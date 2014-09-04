@@ -118,7 +118,7 @@ void _CopyArgs(LogData& log_data, Args ... args) {
   log_data.pid = getpid();
   log_data.tid = std::this_thread::get_id();
   log_data.fd = yeti::Logger::instance().GetFileDesc();
-  bool is_colored = yeti::Logger::instance().GetColored();
+  bool is_colored = yeti::Logger::instance().GetColorization();
 
   auto print_func = [log_data, is_colored, args...] {
     std::string final_fmt = ParseFormatStr(log_data) + "\n";
@@ -128,7 +128,7 @@ void _CopyArgs(LogData& log_data, Args ... args) {
     std::fprintf(log_data.fd, final_fmt.c_str(), args...);
   };
 
-  yeti::Logger::instance().PushToLog(print_func);
+  yeti::Logger::instance().EnqueueTask(print_func);
 }
 
 inline std::string ParseFormatStr(const LogData& log_data) {
