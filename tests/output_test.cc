@@ -29,13 +29,18 @@
 
 void TestLog(yeti::LogLevel level) {
   yeti::SetLevel(level);  // set current log level
+
   TRACE("trace info");
+
   std::string debug_str = "test debug output";
   DEBUG("%s", debug_str.c_str());
+
   INFO("is current log colored? %d", yeti::GetColored());
   WARN("int size: %zu B", sizeof(int));
+
   int size[3] = { 0, 1, 2 };
   ERROR("array items: (%d, %d, %d)", size[0], size[1], size[2]);
+
   CRITICAL("critical output\n");
 }
 

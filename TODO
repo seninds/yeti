@@ -3,3 +3,4 @@ TODO list:
 * check format string (%(MSG) should be always in it)
 * is it possible to print format string using variadic template instead of __VA_ARGS__
 * add opportunity to set date and time in format string
+* add log msg id %(ID)
