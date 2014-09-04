@@ -28,7 +28,7 @@
 #include <yeti/yeti.h>
 
 void TestLog(yeti::LogLevel level) {
-  yeti::SetLogLevel(level);  // set current log level
+  yeti::SetLogLevel(level);
 
   TRACE("some trace info");
 
@@ -60,8 +60,8 @@ int main(int argc, char* argv[]) {
   yeti::SetLogFormatStr("[%(TAG)] [%(PID):%(TID)] %(FUNCNAME)(): %(MSG)");
   TestLog(yeti::LOG_LEVEL_ERROR);
   yeti::SetLogColorization(true);
-  TestLog(yeti::LOG_LEVEL_CRITICAL);  // check is a tty device currently using
-  yeti::CloseLogFileDesc();
+  TestLog(yeti::LOG_LEVEL_CRITICAL);
+  yeti::CloseLogFileDesc();  // enqueue closing file descriptor
 
   return 0;
 }
