@@ -27,41 +27,64 @@
 
 #include <yeti/yeti.h>
 
-void TestLog(yeti::LogLevel level) {
-  yeti::SetLogLevel(level);
+#include <csignal>
+#include <cstdlib>
+#include <map>
+#include <mutex>
+#include <string>
+#include <yeti/logger.h>
 
-  TRACE("some trace info");
+namespace yeti {
 
-  std::string debug_str = "test string";
-  DEBUG("print string: %s", debug_str.c_str());
+std::map<int, std::string> SIGNAME = {
+    { SIGABRT, "SIGABRT" },
+    { SIGFPE, "SIGFPE" },
+    { SIGILL, "SIGILL" },
+    { SIGINT, "SIGINT" },
+    { SIGSEGV, "SIGSEGV" },
+    { SIGTERM, "SIGTERM" }
+};
 
-  INFO("is current log colored? %d", yeti::IsLogColored());
-  WARN("current file descriptor: %d", fileno(yeti::GetLogFileDesc()));
-
-  int array[3] = { 0, 1, 2 };
-  ERROR("print array elements: (%d, %d, %d)", array[0], array[1], array[2]);
-
-  CRITICAL("current log level: %d\n", yeti::GetLogLevel());
+void ShutdownLog() {
+  yeti::Logger::instance().Shutdown();
 }
 
-
-int main(int argc, char* argv[]) {
-  yeti::SetLogColored(true);  // turn on log colorization
-  TestLog(yeti::LOG_LEVEL_TRACE);
-  TestLog(yeti::LOG_LEVEL_DEBUG);
-
-  yeti::SetLogColored(false);  // turn off log colorization
-  yeti::SetLogFormatStr("[%(TAG)] [%(PID)] %(FILENAME): %(LINE): %(MSG)");
-  TestLog(yeti::LOG_LEVEL_INFO);
-
-  FILE* fd = std::fopen("test.log", "w");
-  yeti::SetLogFileDesc(fd);  // start logging into specified file
-  TestLog(yeti::LOG_LEVEL_WARNING);
-  yeti::SetLogFormatStr("[%(TAG)] [%(PID):%(TID)] %(FUNCNAME)(): %(MSG)");
-  TestLog(yeti::LOG_LEVEL_ERROR);
-  yeti::SetLogColored(true);
-  TestLog(yeti::LOG_LEVEL_CRITICAL);
-  yeti::CloseLogFileDesc();  // enqueue closing file descriptor
-
-  return 0;
+void SignalHandler(int sig_num) {
+  std::fprintf(stderr, "caught %s: start flushing log...\n",
+               SIGNAME[sig_num].c_str());
+  std::exit(sig_num);
 }
+
+void RegisterSignals() {
+  std::atexit(ShutdownLog);
+  for (const auto& entry : SIGNAME) {
+    signal(entry.first, SignalHandler);
+  }
+}
+
+std::string ParseFormatStr(const yeti::LogData& log_data) {
+  std::map<std::string, std::string> subs;
+  subs["%(TAG)"] = log_data.tag;
+  subs["%(FILENAME)"] = log_data.filename;
+  subs["%(FUNCNAME)"] = log_data.funcname;
+  subs["%(PID)"] = std::to_string(log_data.pid);
+
+  std::hash<std::thread::id> hash_fn;
+  std::ostringstream oss;
+  oss << std::hex << std::uppercase << hash_fn(log_data.tid);
+  subs["%(TID)"] = oss.str();
+
+  subs["%(LINE)"] = std::to_string(log_data.line);
+  subs["%(MSG)"] = log_data.msg_format;
+
+  std::string result = log_data.log_format;
+  size_t pos = 0;
+  for (const auto& entry : subs) {
+    while ((pos = result.find(entry.first)) != std::string::npos) {
+      result.replace(pos, entry.first.length(), entry.second);
+    }
+  }
+  return result;
+}
+
+}  // namespace yeti

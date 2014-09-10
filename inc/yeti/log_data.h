@@ -25,43 +25,24 @@
 // yeti - C++ lightweight threadsafe logging
 // URL: https://github.com/seninds/yeti.git
 
-#include <yeti/yeti.h>
+#ifndef INC_YETI_LOG_DATA_H_
+#define INC_YETI_LOG_DATA_H_
 
-void TestLog(yeti::LogLevel level) {
-  yeti::SetLogLevel(level);
+namespace yeti {
 
-  TRACE("some trace info");
+struct LogData {
+  std::string log_format;
+  std::string tag;
+  std::string color;
+  std::string filename;
+  std::string funcname;
+  std::string msg_format;
+  pid_t pid;
+  std::thread::id tid;
+  int line;
+  FILE* fd;
+};
 
-  std::string debug_str = "test string";
-  DEBUG("print string: %s", debug_str.c_str());
+}  // namespace yeti
 
-  INFO("is current log colored? %d", yeti::IsLogColored());
-  WARN("current file descriptor: %d", fileno(yeti::GetLogFileDesc()));
-
-  int array[3] = { 0, 1, 2 };
-  ERROR("print array elements: (%d, %d, %d)", array[0], array[1], array[2]);
-
-  CRITICAL("current log level: %d\n", yeti::GetLogLevel());
-}
-
-
-int main(int argc, char* argv[]) {
-  yeti::SetLogColored(true);  // turn on log colorization
-  TestLog(yeti::LOG_LEVEL_TRACE);
-  TestLog(yeti::LOG_LEVEL_DEBUG);
-
-  yeti::SetLogColored(false);  // turn off log colorization
-  yeti::SetLogFormatStr("[%(TAG)] [%(PID)] %(FILENAME): %(LINE): %(MSG)");
-  TestLog(yeti::LOG_LEVEL_INFO);
-
-  FILE* fd = std::fopen("test.log", "w");
-  yeti::SetLogFileDesc(fd);  // start logging into specified file
-  TestLog(yeti::LOG_LEVEL_WARNING);
-  yeti::SetLogFormatStr("[%(TAG)] [%(PID):%(TID)] %(FUNCNAME)(): %(MSG)");
-  TestLog(yeti::LOG_LEVEL_ERROR);
-  yeti::SetLogColored(true);
-  TestLog(yeti::LOG_LEVEL_CRITICAL);
-  yeti::CloseLogFileDesc();  // enqueue closing file descriptor
-
-  return 0;
-}
+#endif  // INC_YETI_LOG_DATA_H_

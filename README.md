@@ -18,12 +18,12 @@ enum LogLevel {
 
 Logging has printf-style compact format:
 ~~~~~~
-ERROR("[%d] exception: %s", function_id. e.what());
+ERROR("[%d] exception: %s", function_id, e.what());
 ~~~~~~
 
 You can tune log format:
 ~~~~~~
-yeti::SetFormatStr("[%(TAG)] [%(PID)] %(FILENAME): %(LINE): %(MSG)");
+yeti::SetLogFormatStr("[%(TAG)] [%(PID)] %(FILENAME): %(LINE): %(MSG)");
 ~~~~~~
 
 Keywords to set log format are:
@@ -37,11 +37,13 @@ Keywords to set log format are:
 
 ## Usage
 
-Just add content of _"inc/yeti"_ to your project, add __yeti.h__
-into your source files and start to use __Yeti__ log.
+To use __Yeti__ you should:
+* add content of _"inc/yeti"_ to your project;
+* add __#include <yeti/yeti.h>__ into your source files;
+* build __yeti__ lib and link with it into your project at link-time.
 
-Logging has a lazy initialization, so if you don't use it you will not have any overhead.
-Just add into your code following macros:
+Logging has a lazy initialization, so if you don't use it you will not have any
+overhead. Just add into your code following macros:
 ~~~~~~
 CRITICAL(msg_fmt, ...);
 ERROR(msg_fmt, ...);
@@ -56,8 +58,8 @@ Logging control is based on yeti namespace functions:
 namespace yeti {
   void SetLogLevel(LogLevel level) noexcept;
   int GetLogLevel() noexcept;
-  void SetLogColorization(bool is_colored) noexcept;
-  bool GetLogColorization() noexcept;
+  void SetLogColored(bool is_colored) noexcept;
+  bool IsLogColored() noexcept;
   void SetLogFileDesc(FILE* fd) noexcept;
   FILE* GetLogFileDesc() noexcept;
   void CloseLogFileDesc(FILE* fd = nullptr);
@@ -71,13 +73,17 @@ namespace yeti {
 __Yeti__ uses C++11 and multithreading, so you should add "-std=c++11 -pthread" compile options:
 
 ~~~~~~
-clang++ -O3 -std=c++11 -Wall -Werror -pthread -I../inc -o output_test output_test.cc
+# mkdir build
+# cd build
+# clang++ -O3 -Wall -Werror -std=c++11 -pthread -fpic -shared -I../inc -o libyeti.so  ../src/yeti.cc ../src/logger.cc
+# clang++ -O3 -Wall -Werror -std=c++11 -pthread -I../inc -L. -o output_test ../tests/output_test.cc -lyeti
+# LD_LIBRARY_PATH=".:$LD_LIBRARY_PATH" ./output_test
 ~~~~~~
 
-GCC has a bug with lambda
+GCC 4.8.2 has a bug with lambda
 (<a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=41933">lambda
 doesn't capture parameter pack</a>),
-so you have to use clang (v.3.5 or later) to use <b>Yeti</b>. Hope
+so you have to use clang (v.3.5 or later) to use __Yeti__. Hope
 guys from GNU Compiler team will fix this bug in the nearest future.
 
 
@@ -94,7 +100,7 @@ void TestLog(yeti::LogLevel level) {
   std::string debug_str = "test string";
   DEBUG("print string: %s", debug_str.c_str());
 
-  INFO("is current log colored? %d", yeti::GetLogColorization());
+  INFO("is current log colored? %d", yeti::IsLogColored());
   WARN("current file descriptor: %d", fileno(yeti::GetLogFileDesc()));
 
   int array[3] = { 0, 1, 2 };
@@ -105,20 +111,20 @@ void TestLog(yeti::LogLevel level) {
 
 
 int main(int argc, char* argv[]) {
-  yeti::SetLogColorization(true);  // turn on log colorization
+  yeti::SetLogColored(true);  // turn on log colorization
   TestLog(yeti::LOG_LEVEL_TRACE);
   TestLog(yeti::LOG_LEVEL_DEBUG);
 
-  yeti::SetLogColorization(false);  // turn off log colorization
+  yeti::SetLogColored(false);  // turn off log colorization
   yeti::SetLogFormatStr("[%(TAG)] [%(PID)] %(FILENAME): %(LINE): %(MSG)");
   TestLog(yeti::LOG_LEVEL_INFO);
 
-  FILE* fd = ::fopen("output_test.log", "w");
+  FILE* fd = std::fopen("test.log", "w");
   yeti::SetLogFileDesc(fd);  // start logging into specified file
   TestLog(yeti::LOG_LEVEL_WARNING);
   yeti::SetLogFormatStr("[%(TAG)] [%(PID):%(TID)] %(FUNCNAME)(): %(MSG)");
   TestLog(yeti::LOG_LEVEL_ERROR);
-  yeti::SetLogColorization(true);
+  yeti::SetLogColored(true);
   TestLog(yeti::LOG_LEVEL_CRITICAL);
   yeti::CloseLogFileDesc();  // enqueue closing file descriptor
 

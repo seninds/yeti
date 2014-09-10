@@ -22,20 +22,16 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-// yeti - C++ lightweight threadsafe logging system
+// yeti - C++ lightweight threadsafe logging
 // URL: https://github.com/seninds/yeti.git
 
 #ifndef INC_YETI_YETI_H_
 #define INC_YETI_YETI_H_
 
-#include <atomic>
-#include <condition_variable>
-#include <mutex>
-#include <queue>
+#include <cstdio>
 #include <string>
-#include <thread>
 
-#include <yeti/color.h>
+#include <yeti/log_level.h>
 
 /**
  * @namespace yeti
@@ -43,27 +39,17 @@
  */
 namespace yeti {
 
-/** @brief Constants to set current logging level. */
-enum LogLevel {
-  LOG_LEVEL_CRITICAL,
-  LOG_LEVEL_ERROR,
-  LOG_LEVEL_WARNING,
-  LOG_LEVEL_INFO,
-  LOG_LEVEL_DEBUG,
-  LOG_LEVEL_TRACE
-};
-
 /** @brief Sets logging level. */
 void SetLogLevel(LogLevel level) noexcept;
 
 /** @brief Returns current logging level. */
 int GetLogLevel() noexcept;
 
-/** @brief Sets log colorization: "true" to set colored log. */
-void SetLogColorization(bool is_colored) noexcept;
+/** @brief Sets log to be colored. */
+void SetLogColored(bool is_colored) noexcept;
 
-/** @brief Returns current log colorization. */
-bool GetLogColorization() noexcept;
+/** @brief Returns is log colored. */
+bool IsLogColored() noexcept;
 
 /**
  * @brief Sets file descriptor to log into it.
@@ -104,67 +90,6 @@ void SetLogFormatStr(const std::string& format_str) noexcept;
 
 /** @brief Returns current format string. */
 std::string GetLogFormatStr() noexcept;
-
-
-// user should not see _Shutdown() in yeti namespace
-namespace { void _ShutdownLog(); }
-
-/** @brief Singleton to provide access to logger object. */
-class Logger {
- public:
-  ~Logger() = default;
-  Logger(const Logger&) = delete;
-  Logger& operator=(const Logger&) = delete;
-  Logger* operator &() = delete;
-
-  /** @brief Returns instance of logger object. */
-  static Logger& instance();
-
-  /** @brief Adds functor to log queue. */
-  void EnqueueTask(const std::function<void()>& queue_func);
-
-  /** @brief Sets logging level. */
-  void SetLevel(LogLevel level) noexcept { instance().level_ = level; }
-  /** @brief Returns current logging level. */
-  int GetLevel() const noexcept { return instance().level_; }
-
-  /** @brief Sets log colorization. */
-  void SetColorization(bool is_colored) noexcept { is_colored_ = is_colored; }
-  /** @brief Returns current log colorization. */
-  bool GetColorization() const noexcept { return instance().is_colored_; }
-
-  /** @brief Sets file log descriptor. */
-  void SetFileDesc(FILE* fd) noexcept { fd_ = fd; }
-  /** @brief Returns current file log descriptor. */
-  FILE* GetFileDesc() const noexcept { return fd_;}
-  /** @brief Closes specified log file descriptor. */
-  void CloseFileDesc(FILE* fd = nullptr);
-
-  /** @brief Sets specified log format. */
-  void SetFormatStr(const std::string& format_str) noexcept;
-  /** @brief Returns current log format. */
-  std::string GetFormatStr() const noexcept;
-
-  /** @brief Contains loop of logging thread. */
-  void ProcessingLoop();
-
-  /** @brief Shutdowns logging. */
-  void Shutdown();
-
- private:
-  Logger();
-
-  mutable std::mutex queue_mutex_;
-  mutable std::mutex settings_mutex_;
-  std::condition_variable cv_;
-  std::queue<std::function<void()>> queue_;
-  std::atomic<bool> stop_loop_;
-  std::atomic<bool> is_colored_;
-  std::atomic<int> level_;
-  std::string format_str_;
-  std::thread thread_;
-  std::atomic<FILE*> fd_;
-};
 
 }  // namespace yeti
 

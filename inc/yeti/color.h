@@ -22,7 +22,7 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-// yeti - C++ lightweight threadsafe logging system
+// yeti - C++ lightweight threadsafe logging
 // URL: https://github.com/seninds/yeti.git
 
 #ifndef INC_YETI_COLOR_H_

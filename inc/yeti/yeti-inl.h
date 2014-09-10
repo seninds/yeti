@@ -22,22 +22,16 @@
 // ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 // POSSIBILITY OF SUCH DAMAGE.
 //
-// yeti - C++ lightweight threadsafe logging system
+// yeti - C++ lightweight threadsafe logging
 // URL: https://github.com/seninds/yeti.git
 
 #ifndef INC_YETI_YETI_INL_H_
 #define INC_YETI_YETI_INL_H_
 
 #include <cstdio>
-#include <cstdlib>
-#include <map>
-#include <sstream>
+#include <yeti/logger.h>
 
 namespace yeti {
-
-namespace {
-  inline void _ShutdownLog() { yeti::Logger::instance().Shutdown(); }
-}
 
 inline void SetLogLevel(LogLevel level) noexcept {
   Logger::instance().SetLevel(level);
@@ -47,12 +41,12 @@ inline int GetLogLevel() noexcept {
   return Logger::instance().GetLevel();
 }
 
-inline void SetLogColorization(bool is_colored) noexcept {
-  Logger::instance().SetColorization(is_colored);
+inline void SetLogColored(bool is_colored) noexcept {
+  Logger::instance().SetColored(is_colored);
 }
 
-inline bool GetLogColorization() noexcept {
-  return Logger::instance().GetColorization();
+inline bool IsLogColored() noexcept {
+  return Logger::instance().IsColored();
 }
 
 inline void SetLogFileDesc(FILE* fd) noexcept {
@@ -73,79 +67,6 @@ inline void SetLogFormatStr(const std::string& format_str) noexcept {
 
 inline std::string GetLogFormatStr() noexcept {
   return Logger::instance().GetFormatStr();
-}
-
-
-inline Logger::Logger()
-    : stop_loop_(false),
-      is_colored_(true),
-      level_(LogLevel::LOG_LEVEL_INFO),
-      format_str_("[%(TAG)] %(FILENAME): %(LINE): %(MSG)"),
-      fd_(stderr) {
-  thread_ = std::thread(&Logger::ProcessingLoop, this);
-}
-
-inline Logger& Logger::instance() {
-  static Logger logger;
-
-  // register _Shutdown() at std::exit()
-  static bool is_atexit_registered = false;
-  static std::mutex registered_mutex;
-  if (!is_atexit_registered) {
-    std::lock_guard<std::mutex> lock(registered_mutex);
-    if (!is_atexit_registered) {
-      std::atexit(_ShutdownLog);
-      is_atexit_registered = true;
-    }
-  }
-  return logger;
-}
-
-inline void Logger::CloseFileDesc(FILE* fd) {
-  if (fd == nullptr) {
-    fd = fd_;
-  }
-  if (fd != stderr && fd != stdout && fd != stdin) {
-    auto close_func = [fd] { ::fclose(fd); };
-    this->EnqueueTask(close_func);
-  }
-}
-
-inline void Logger::EnqueueTask(const std::function<void()>& queue_func) {
-  std::lock_guard<std::mutex> queue_lock(queue_mutex_);
-  queue_.push(queue_func);
-  cv_.notify_one();
-}
-
-inline void Logger::Shutdown() {
-  // set flag to stop processing loop
-  stop_loop_ = true;
-  if (thread_.joinable()) {
-    thread_.join();
-  }
-}
-
-inline void Logger::ProcessingLoop() {
-  // start processing loop
-  do {
-    std::unique_lock<std::mutex> queue_lock(queue_mutex_);
-    cv_.wait_for(queue_lock, std::chrono::milliseconds(1000),
-                 [this] { return !this->queue_.empty(); });
-    while (!queue_.empty()) {
-      queue_.front()();
-      queue_.pop();
-    }
-  } while (!stop_loop_);
-}
-
-inline void Logger::SetFormatStr(const std::string& format_str) noexcept {
-  std::lock_guard<std::mutex> lock(settings_mutex_);
-  format_str_ = format_str;
-}
-
-inline std::string Logger::GetFormatStr() const noexcept {
-  std::lock_guard<std::mutex> lock(settings_mutex_);
-  return format_str_;
 }
 
 }  // namespace yeti
