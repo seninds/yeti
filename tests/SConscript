@@ -1,14 +1,16 @@
 env = Environment()
 
-root_dir = "../"
+root_dir = "../../"
 inc_dir = root_dir + "inc/"
+lib_dir = root_dir + "build/"
 
-src_files = ["yeti.cc", "logger.cc"]
+src_files = ["output_test.cc"]
 
 env.Replace(CC = "clang", CXX = "clang++")
 env.Append(CPPPATH = [inc_dir])
 env.Append(CCFLAGS = ["-O3", "-std=c++11"])
+env.Append(LIBPATH = [lib_dir])
+env.Append(LIBS = ["yeti"])
 env.Append(LINKFLAGS = ["-pthread"])
 
-shared_lib = env.SharedLibrary(target = "yeti", source = src_files)
-static_lib = env.StaticLibrary(target = "yeti", source = src_files)
+env.Program("output_test", source = src_files)

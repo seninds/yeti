@@ -51,10 +51,11 @@ int main(int argc, char* argv[]) {
   TestLog(yeti::LOG_LEVEL_DEBUG);
 
   yeti::SetLogColored(false);  // turn off log colorization
-  yeti::SetLogFormatStr("[%(TAG)] [%(PID)] %(FILENAME): %(LINE): %(MSG)");
+  yeti::SetLogFormatStr(
+      "%(MSG_ID) [%(TAG)] [PID:%(PID)] %(FILENAME): %(LINE): %(MSG)");
   TestLog(yeti::LOG_LEVEL_INFO);
 
-  FILE* fd = std::fopen("test.log", "w");
+  FILE* fd = std::fopen("/tmp/test.log", "w");
   yeti::SetLogFileDesc(fd);  // start logging into specified file
   TestLog(yeti::LOG_LEVEL_WARNING);
   yeti::SetLogFormatStr("[%(TAG)] [%(PID):%(TID)] %(FUNCNAME)(): %(MSG)");

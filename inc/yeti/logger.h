@@ -64,6 +64,11 @@ class Logger {
   /** @brief Returns current log colorization. */
   bool IsColored() const noexcept { return instance().is_colored_; }
 
+  /** @brief Returns current message ID. */
+  std::size_t GetMsgId() const noexcept { return msg_id_; }
+  /** @brief Increments message ID. */
+  void IncMsgId() noexcept { ++msg_id_; }
+
   /** @brief Sets file log descriptor. */
   void SetFileDesc(FILE* fd) noexcept { fd_ = fd; }
   /** @brief Returns current file log descriptor. */
@@ -92,6 +97,7 @@ class Logger {
   std::atomic<bool> stop_loop_;
   std::atomic<bool> is_colored_;
   std::atomic<int> level_;
+  std::atomic<std::size_t> msg_id_;
   std::string format_str_;
   std::atomic<FILE*> fd_;
   std::thread thread_;

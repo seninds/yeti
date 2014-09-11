@@ -34,13 +34,14 @@ Keywords to set log format are:
 * %(TID)      - thread ID
 * %(LINE)     - line number
 * %(MSG)      - user message (format string)
+* %(MSG_ID)   - unique message number
 
 ## Usage
 
 To use __Yeti__ you should:
 * add content of _"inc/yeti"_ to your project;
 * add __#include <yeti/yeti.h>__ into your source files;
-* build __yeti__ lib and link with it into your project at link-time.
+* build __yeti__ lib and link with it your project.
 
 Logging has a lazy initialization, so if you don't use it you will not have any
 overhead. Just add into your code following macros:
@@ -70,20 +71,22 @@ namespace yeti {
 
 ## Requirements
 
-__Yeti__ uses C++11 and multithreading, so you should add "-std=c++11 -pthread" compile options:
+* clang v3.5 or later
+* pthread
+* scons v2.3.3 or later
+
+__Yeti__ uses C++11 and multithreading, so you should add *-std=c++11* and *-pthread* compile and link options.
+__Yeti__ uses SCons as a build system. So to build project and run *output_test* just type in your console:
 
 ~~~~~~
-# mkdir build
-# cd build
-# clang++ -O3 -Wall -Werror -std=c++11 -pthread -fpic -shared -I../inc -o libyeti.so  ../src/yeti.cc ../src/logger.cc
-# clang++ -O3 -Wall -Werror -std=c++11 -pthread -I../inc -L. -o output_test ../tests/output_test.cc -lyeti
-# LD_LIBRARY_PATH=".:$LD_LIBRARY_PATH" ./output_test
+# scons
+# LD_LIBRARY_PATH="./build" ./build/tests/output_test
 ~~~~~~
 
 GCC 4.8.2 has a bug with lambda
 (<a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=41933">lambda
 doesn't capture parameter pack</a>),
-so you have to use clang (v.3.5 or later) to use __Yeti__. Hope
+so you have to use clang (v3.5 or later) to use __Yeti__. Hope
 guys from GNU Compiler team will fix this bug in the nearest future.
 
 
@@ -116,10 +119,11 @@ int main(int argc, char* argv[]) {
   TestLog(yeti::LOG_LEVEL_DEBUG);
 
   yeti::SetLogColored(false);  // turn off log colorization
-  yeti::SetLogFormatStr("[%(TAG)] [%(PID)] %(FILENAME): %(LINE): %(MSG)");
+  yeti::SetLogFormatStr(
+      "%(MSG_ID) [%(TAG)] [PID:%(PID)] %(FILENAME): %(LINE): %(MSG)");
   TestLog(yeti::LOG_LEVEL_INFO);
 
-  FILE* fd = std::fopen("test.log", "w");
+  FILE* fd = std::fopen("/tmp/test.log", "w");
   yeti::SetLogFileDesc(fd);  // start logging into specified file
   TestLog(yeti::LOG_LEVEL_WARNING);
   yeti::SetLogFormatStr("[%(TAG)] [%(PID):%(TID)] %(FUNCNAME)(): %(MSG)");

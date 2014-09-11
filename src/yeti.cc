@@ -76,6 +76,7 @@ std::string ParseFormatStr(const yeti::LogData& log_data) {
 
   subs["%(LINE)"] = std::to_string(log_data.line);
   subs["%(MSG)"] = log_data.msg_format;
+  subs["%(MSG_ID)"] = std::to_string(log_data.msg_id);
 
   std::string result = log_data.log_format;
   size_t pos = 0;

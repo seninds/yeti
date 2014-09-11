@@ -28,6 +28,10 @@
 #ifndef INC_YETI_LOG_DATA_H_
 #define INC_YETI_LOG_DATA_H_
 
+#include <unistd.h>
+#include <cstdio>
+#include <thread>
+
 namespace yeti {
 
 struct LogData {
@@ -41,6 +45,7 @@ struct LogData {
   std::thread::id tid;
   int line;
   FILE* fd;
+  std::size_t msg_id;
 };
 
 }  // namespace yeti
