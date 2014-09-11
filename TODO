@@ -2,4 +2,4 @@ TODO list:
 * check format string (%(MSG) should be always in it)
 * use safe fprintf (check args number)
 * add opportunity to set date and time in format string
-* add log msg id %(ID)
+* add define param to set all macros to void
