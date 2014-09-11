@@ -1,11 +1,13 @@
 *~
 *.o
+*.os
 *.out
 *.log
 *.html
 *.png
 *.css
 *.js
+.sconsign.dblite
 Debug/
 Release/
 html/

@@ -1,0 +1,18 @@
+env = Environment()
+
+inc_dir = "../inc/"
+install_dir = "/tmp/yeti/lib/"
+
+src_files = ["yeti.cc", "logger.cc"]
+
+env.Replace(CC = "clang", CXX = "clang++")
+env.Append(CPPPATH = [inc_dir])
+env.Append(CCFLAGS = ["-O3", "-std=c++11"])
+env.Append(LINKFLAGS = ["-pthread"])
+
+shared_lib = env.SharedLibrary(target = "yeti", source = src_files)
+static_lib = env.StaticLibrary(target = "yeti", source = src_files)
+
+shared_install = env.Install(install_dir, shared_lib)
+static_install = env.Install(install_dir, static_lib)
+env.Alias("install", install_dir)
