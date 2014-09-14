@@ -55,7 +55,7 @@ void _CopyArgs(yeti::LogData& log_data, Args... args);
 #define CRITICAL(fmt, ...) { \
   std::size_t msg_id = yeti::Logger::instance().GetMsgId(); \
   yeti::Logger::instance().IncMsgId(); \
-  yeti::LogData data { .tag = "CRITICAL", .color = YETI_LRED, .filename = __FILE__, \
+  yeti::LogData data { .level = "CRITICAL", .color = YETI_LRED, .filename = __FILE__, \
                        .funcname = __func__, .msg_format = fmt, .line = __LINE__, \
                        .msg_id = msg_id }; \
   yeti::_CopyArgs(data, ##__VA_ARGS__); \
@@ -65,7 +65,7 @@ void _CopyArgs(yeti::LogData& log_data, Args... args);
   std::size_t msg_id = yeti::Logger::instance().GetMsgId(); \
   yeti::Logger::instance().IncMsgId(); \
   if (yeti::Logger::instance().GetLevel() >= yeti::LOG_LEVEL_ERROR) { \
-    yeti::LogData data { .tag = "ERROR", .color = YETI_LPURPLE, \
+    yeti::LogData data { .level = "ERROR", .color = YETI_LPURPLE, \
                    .filename = __FILE__, .funcname = __func__, \
                    .msg_format = fmt, .line = __LINE__, .msg_id = msg_id }; \
     yeti::_CopyArgs(data, ##__VA_ARGS__); \
@@ -76,7 +76,7 @@ void _CopyArgs(yeti::LogData& log_data, Args... args);
   std::size_t msg_id = yeti::Logger::instance().GetMsgId(); \
   yeti::Logger::instance().IncMsgId(); \
   if (yeti::Logger::instance().GetLevel() >= yeti::LOG_LEVEL_WARNING) { \
-    yeti::LogData data { .tag = "WARNING", .color = YETI_YELLOW, \
+    yeti::LogData data { .level = "WARNING", .color = YETI_YELLOW, \
                    .filename = __FILE__, .funcname = __func__, \
                    .msg_format = fmt, .line = __LINE__, .msg_id = msg_id }; \
     yeti::_CopyArgs(data, ##__VA_ARGS__); \
@@ -87,7 +87,7 @@ void _CopyArgs(yeti::LogData& log_data, Args... args);
   std::size_t msg_id = yeti::Logger::instance().GetMsgId(); \
   yeti::Logger::instance().IncMsgId(); \
   if (yeti::Logger::instance().GetLevel() >= yeti::LOG_LEVEL_INFO) { \
-    yeti::LogData data { .tag = "INFO", .color = YETI_LGREEN, \
+    yeti::LogData data { .level = "INFO", .color = YETI_LGREEN, \
                    .filename = __FILE__, .funcname = __func__, \
                    .msg_format = fmt, .line = __LINE__, .msg_id = msg_id }; \
     yeti::_CopyArgs(data, ##__VA_ARGS__); \
@@ -98,7 +98,7 @@ void _CopyArgs(yeti::LogData& log_data, Args... args);
   std::size_t msg_id = yeti::Logger::instance().GetMsgId(); \
   yeti::Logger::instance().IncMsgId(); \
   if (yeti::Logger::instance().GetLevel() >= yeti::LOG_LEVEL_DEBUG) { \
-    yeti::LogData data { .tag = "DEBUG", .color = YETI_WHITE, \
+    yeti::LogData data { .level = "DEBUG", .color = YETI_WHITE, \
                    .filename = __FILE__, .funcname = __func__, \
                    .msg_format = fmt, .line = __LINE__, .msg_id = msg_id }; \
     yeti::_CopyArgs(data, ##__VA_ARGS__); \
@@ -109,7 +109,7 @@ void _CopyArgs(yeti::LogData& log_data, Args... args);
   std::size_t msg_id = yeti::Logger::instance().GetMsgId(); \
   yeti::Logger::instance().IncMsgId(); \
   if (yeti::Logger::instance().GetLevel() >= yeti::LOG_LEVEL_TRACE) { \
-    yeti::LogData data { .tag = "TRACE", .color = "", \
+    yeti::LogData data { .level = "TRACE", .color = "", \
                    .filename = __FILE__, .funcname = __func__, \
                    .msg_format = fmt, .line = __LINE__, .msg_id = msg_id }; \
     yeti::_CopyArgs(data, ##__VA_ARGS__); \

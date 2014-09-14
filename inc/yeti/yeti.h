@@ -75,7 +75,7 @@ void CloseLogFileDesc(FILE* fd = nullptr);
  *
  * Keywords to set log format are:
  * <ul>
- * <li> %(TAG)      - tag of current logging level </li>
+ * <li> %(LEVEL)    - current logging level </li>
  * <li> %(FILENAME) - filename </li>
  * <li> %(FUNCNAME) - function name </li>
  * <li> %(PID)      - process ID </li>

@@ -64,7 +64,7 @@ void RegisterSignals() {
 
 std::string ParseFormatStr(const yeti::LogData& log_data) {
   std::map<std::string, std::string> subs;
-  subs["%(TAG)"] = log_data.tag;
+  subs["%(LEVEL)"] = log_data.level;
   subs["%(FILENAME)"] = log_data.filename;
   subs["%(FUNCNAME)"] = log_data.funcname;
   subs["%(PID)"] = std::to_string(log_data.pid);

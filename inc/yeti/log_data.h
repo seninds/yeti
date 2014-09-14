@@ -36,7 +36,7 @@ namespace yeti {
 
 struct LogData {
   std::string log_format;
-  std::string tag;
+  std::string level;
   std::string color;
   std::string filename;
   std::string funcname;

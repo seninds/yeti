@@ -34,7 +34,7 @@ Logger::Logger()
       is_colored_(true),
       level_(LogLevel::LOG_LEVEL_INFO),
       msg_id_(0),
-      format_str_("[%(TAG)] %(FILENAME): %(LINE): %(MSG)"),
+      format_str_("[%(LEVEL)] %(FILENAME): %(LINE): %(MSG)"),
       fd_(stderr) {
   thread_ = std::thread(&Logger::ProcessingLoop, this);
 }

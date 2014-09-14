@@ -23,11 +23,11 @@ ERROR("[%d] exception: %s", function_id, e.what());
 
 You can tune log format:
 ~~~~~~
-yeti::SetLogFormatStr("[%(TAG)] [%(PID)] %(FILENAME): %(LINE): %(MSG)");
+yeti::SetLogFormatStr("[%(LEVEL)] [%(PID)] %(FILENAME): %(LINE): %(MSG)");
 ~~~~~~
 
 Keywords to set log format are:
-* %(TAG)      - tag of current logging level
+* %(LEVEL)    - current logging level
 * %(FILENAME) - filename
 * %(FUNCNAME) - function name
 * %(PID)      - process ID
@@ -120,13 +120,13 @@ int main(int argc, char* argv[]) {
 
   yeti::SetLogColored(false);  // turn off log colorization
   yeti::SetLogFormatStr(
-      "%(MSG_ID) [%(TAG)] [PID:%(PID)] %(FILENAME): %(LINE): %(MSG)");
+      "%(MSG_ID) [%(LEVEL)] [PID:%(PID)] %(FILENAME): %(LINE): %(MSG)");
   TestLog(yeti::LOG_LEVEL_INFO);
 
   FILE* fd = std::fopen("/tmp/test.log", "w");
   yeti::SetLogFileDesc(fd);  // start logging into specified file
   TestLog(yeti::LOG_LEVEL_WARNING);
-  yeti::SetLogFormatStr("[%(TAG)] [%(PID):%(TID)] %(FUNCNAME)(): %(MSG)");
+  yeti::SetLogFormatStr("[%(LEVEL)] [%(PID):%(TID)] %(FUNCNAME)(): %(MSG)");
   TestLog(yeti::LOG_LEVEL_ERROR);
   yeti::SetLogColored(true);
   TestLog(yeti::LOG_LEVEL_CRITICAL);
