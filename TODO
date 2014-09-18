@@ -1,4 +1,5 @@
 TODO list:
+* fix bug with passing c_str() to log macros
 * check format string (%(MSG) should be always in it)
 * use safe fprintf (check args number)
 * add opportunity to set date and time in format string
