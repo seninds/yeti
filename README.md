@@ -87,6 +87,7 @@ __Yeti__ uses SCons as a build system. So to build project and run *output_test*
 
 ## Example
 
+__Example to test Yeti output:__
 ~~~~~~
 #include <yeti/yeti.h>
 
@@ -131,6 +132,39 @@ int main(int argc, char* argv[]) {
 
   return 0;
 }
+~~~~~~
+
+__OUTPUT: stderr__
+~~~~~~
+[TRACE] tests/output_test.cc: 33: some trace info
+[DEBUG] tests/output_test.cc: 36: print string: test string
+[INFO] tests/output_test.cc: 38: is current log colored? 1
+[WARNING] tests/output_test.cc: 39: current file descriptor: 2
+[ERROR] tests/output_test.cc: 42: print array elements: (0, 1, 2)
+[CRITICAL] tests/output_test.cc: 44: current log level: 5
+
+[DEBUG] <2014-09-22 16:35:46.367622886> tests/output_test.cc: 36: print string: test string
+[INFO] <2014-09-22 16:35:46.367625076> tests/output_test.cc: 38: is current log colored? 1
+[WARNING] <2014-09-22 16:35:46.367627078> tests/output_test.cc: 39: current file descriptor: 2
+[ERROR] <2014-09-22 16:35:46.367629321> tests/output_test.cc: 42: print array elements: (0, 1, 2)
+[CRITICAL] <2014-09-22 16:35:46.368124046> tests/output_test.cc: 44: current log level: 4
+
+14 [INFO] <3642E50D01F30105> tests/output_test.cc: 38: is current log colored? 0
+15 [WARNING] <3642E50D01F30105> tests/output_test.cc: 39: current file descriptor: 2
+16 [ERROR] <3642E50D01F30105> tests/output_test.cc: 42: print array elements: (0, 1, 2)
+17 [CRITICAL] <3642E50D01F30105> tests/output_test.cc: 44: current log level: 3
+~~~~~~
+
+__OUTPUT: /tmp/test.log__
+~~~~~~
+21 [WARNING] <3642E50D01F30105> tests/output_test.cc: 39: current file descriptor: 3
+22 [ERROR] <3642E50D01F30105> tests/output_test.cc: 42: print array elements: (0, 1, 2)
+23 [CRITICAL] <3642E50D01F30105> tests/output_test.cc: 44: current log level: 2
+
+[ERROR] [12446:3642E50D01F30105] TestLog(): print array elements: (0, 1, 2)
+[CRITICAL] [12446:3642E50D01F30105] TestLog(): current log level: 1
+
+[CRITICAL] [12446:3642E50D01F30105] TestLog(): current log level: 0
 ~~~~~~
 
 ## LICENCE
