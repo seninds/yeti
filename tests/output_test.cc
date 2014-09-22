@@ -27,9 +27,9 @@
 
 #include <yeti/yeti.h>
 
+
 void TestLog(yeti::LogLevel level) {
   yeti::SetLogLevel(level);
-
   TRACE("some trace info");
 
   std::string debug_str = "test string";

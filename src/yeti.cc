@@ -62,7 +62,7 @@ void RegisterSignals() {
   }
 }
 
-std::string ParseFormatStr(const yeti::LogData& log_data) {
+std::string _CreateLogStr(const yeti::LogData& log_data) {
   std::map<std::string, std::string> subs;
   subs["%(LEVEL)"] = log_data.level;
   subs["%(FILENAME)"] = log_data.filename;
@@ -75,7 +75,7 @@ std::string ParseFormatStr(const yeti::LogData& log_data) {
   subs["%(TID)"] = oss.str();
 
   subs["%(LINE)"] = std::to_string(log_data.line);
-  subs["%(MSG)"] = log_data.msg_format;
+  subs["%(MSG)"] = log_data.msg;
   subs["%(MSG_ID)"] = std::to_string(log_data.msg_id);
 
   std::string result = log_data.log_format;
@@ -86,6 +86,25 @@ std::string ParseFormatStr(const yeti::LogData& log_data) {
     }
   }
   return result;
+}
+
+void _EnqueueLogTask(LogData* log_data) {
+  log_data->log_format = yeti::Logger::instance().GetFormatStr();
+  log_data->pid = getpid();
+  log_data->tid = std::this_thread::get_id();
+  log_data->fd = yeti::Logger::instance().GetFileDesc();
+  bool is_colored = yeti::Logger::instance().IsColored();
+
+  LogData printed_data = *log_data;
+  auto print_func = [printed_data, is_colored] {
+    std::string log_str = _CreateLogStr(printed_data) + "\n";
+    if (isatty(fileno(printed_data.fd)) != 0 && is_colored) {
+      log_str = printed_data.color + log_str + std::string(YETI_RESET);
+    }
+    std::fprintf(printed_data.fd, log_str.c_str());
+  };
+
+  yeti::Logger::instance().EnqueueTask(print_func);
 }
 
 }  // namespace yeti

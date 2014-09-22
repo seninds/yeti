@@ -40,12 +40,12 @@ struct LogData {
   std::string color;
   std::string filename;
   std::string funcname;
-  std::string msg_format;
   pid_t pid;
   std::thread::id tid;
   int line;
   FILE* fd;
   std::size_t msg_id;
+  std::string msg;
 };
 
 }  // namespace yeti
