@@ -73,7 +73,7 @@ namespace yeti {
 
 ## Requirements
 
-* clang v3.5 or later (gcc v4.9.1 has unimplemented features; for example: _'sorry, unimplemented: non-trivial designated initializers not supported'_)
+* clang v3.4 or later, gcc v4.8 or later;
 * pthread
 * scons v2.3.3 or later
 
