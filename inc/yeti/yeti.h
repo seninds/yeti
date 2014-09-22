@@ -82,6 +82,9 @@ void CloseLogFileDesc(FILE* fd = nullptr);
  * <li> %(TID)      - thread ID </li>
  * <li> %(LINE)     - line number </li>
  * <li> %(MSG)      - user message (format string) </li>
+ * <li> %(MSG_ID)   - unique message number to refer in discussion with colleagues </li>
+ * <li> %(DATE)     - local date in YYYY-MM-DD format (the ISO 8601 date format) </li>
+ * <li> %(TIME)     - local time in HH:MM:SS.SSS format (based on the ISO 8601 time format) </li>
  * </ul>
  *
  * You should always use %(MSG) in format string.

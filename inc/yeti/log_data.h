@@ -31,6 +31,7 @@
 #include <unistd.h>
 #include <cstdio>
 #include <thread>
+#include <chrono>
 
 namespace yeti {
 
@@ -46,6 +47,7 @@ struct LogData {
   FILE* fd;
   std::size_t msg_id;
   std::string msg;
+  std::chrono::high_resolution_clock::time_point time;
 };
 
 }  // namespace yeti

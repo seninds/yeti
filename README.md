@@ -27,19 +27,21 @@ yeti::SetLogFormatStr("[%(LEVEL)] [%(PID)] %(FILENAME): %(LINE): %(MSG)");
 ~~~~~~
 
 Keywords to set log format are:
-* %(LEVEL)    - current logging level
+* %(LEVEL)    - logging level
 * %(FILENAME) - filename
 * %(FUNCNAME) - function name
 * %(PID)      - process ID
 * %(TID)      - thread ID
 * %(LINE)     - line number
-* %(MSG)      - user message (format string)
-* %(MSG_ID)   - unique message number
+* %(MSG)      - user message
+* %(MSG_ID)   - unique message number to refer in discussion with colleagues
+* %(DATE)     - local date in YYYY-MM-DD format (the ISO 8601 date format)
+* %(TIME)     - local time in HH:MM:SS.SSS format (based on the ISO 8601 time format)
 
 ## Usage
 
 To use __Yeti__ you should:
-* add content of _"inc/yeti"_ to your project;
+* add content from _"inc/yeti"_ to your project;
 * add __#include <yeti/yeti.h>__ into your source files;
 * build __yeti__ lib and link with it your project.
 
@@ -71,7 +73,7 @@ namespace yeti {
 
 ## Requirements
 
-* clang v3.5 or later
+* clang v3.5 or later, gcc v4.9 or later
 * pthread
 * scons v2.3.3 or later
 
@@ -83,21 +85,14 @@ __Yeti__ uses SCons as a build system. So to build project and run *output_test*
 # LD_LIBRARY_PATH="./build" ./build/tests/output_test
 ~~~~~~
 
-GCC 4.8.2 has a bug with lambda
-(<a href="https://gcc.gnu.org/bugzilla/show_bug.cgi?id=41933">lambda
-doesn't capture parameter pack</a>),
-so you have to use clang (v3.5 or later) to use __Yeti__. Hope
-guys from GNU Compiler team will fix this bug in the nearest future.
-
-
 ## Example
 
 ~~~~~~
 #include <yeti/yeti.h>
 
+
 void TestLog(yeti::LogLevel level) {
   yeti::SetLogLevel(level);
-
   TRACE("some trace info");
 
   std::string debug_str = "test string";
@@ -116,11 +111,13 @@ void TestLog(yeti::LogLevel level) {
 int main(int argc, char* argv[]) {
   yeti::SetLogColored(true);  // turn on log colorization
   TestLog(yeti::LOG_LEVEL_TRACE);
+  yeti::SetLogFormatStr(
+      "[%(LEVEL)] <%(DATE) %(TIME)> %(FILENAME): %(LINE): %(MSG)");
   TestLog(yeti::LOG_LEVEL_DEBUG);
 
   yeti::SetLogColored(false);  // turn off log colorization
   yeti::SetLogFormatStr(
-      "%(MSG_ID) [%(LEVEL)] [PID:%(PID)] %(FILENAME): %(LINE): %(MSG)");
+      "%(MSG_ID) [%(LEVEL)] <%(TID)> %(FILENAME): %(LINE): %(MSG)");
   TestLog(yeti::LOG_LEVEL_INFO);
 
   FILE* fd = std::fopen("/tmp/test.log", "w");

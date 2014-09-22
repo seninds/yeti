@@ -48,11 +48,13 @@ void TestLog(yeti::LogLevel level) {
 int main(int argc, char* argv[]) {
   yeti::SetLogColored(true);  // turn on log colorization
   TestLog(yeti::LOG_LEVEL_TRACE);
+  yeti::SetLogFormatStr(
+      "[%(LEVEL)] <%(DATE) %(TIME)> %(FILENAME): %(LINE): %(MSG)");
   TestLog(yeti::LOG_LEVEL_DEBUG);
 
   yeti::SetLogColored(false);  // turn off log colorization
   yeti::SetLogFormatStr(
-      "%(MSG_ID) [%(LEVEL)] [PID:%(PID)] %(FILENAME): %(LINE): %(MSG)");
+      "%(MSG_ID) [%(LEVEL)] <%(TID)> %(FILENAME): %(LINE): %(MSG)");
   TestLog(yeti::LOG_LEVEL_INFO);
 
   FILE* fd = std::fopen("/tmp/test.log", "w");

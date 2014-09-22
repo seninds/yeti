@@ -29,6 +29,10 @@
 
 #include <csignal>
 #include <cstdlib>
+#include <ctime>
+
+#include <iostream>
+
 #include <map>
 #include <mutex>
 #include <string>
@@ -36,7 +40,7 @@
 
 namespace yeti {
 
-std::map<int, std::string> SIGNAME = {
+const std::map<int, std::string> SIGNAME = {
     { SIGABRT, "SIGABRT" },
     { SIGFPE, "SIGFPE" },
     { SIGILL, "SIGILL" },
@@ -51,7 +55,7 @@ void ShutdownLog() {
 
 void SignalHandler(int sig_num) {
   std::fprintf(stderr, "caught %s: start flushing log...\n",
-               SIGNAME[sig_num].c_str());
+               SIGNAME.at(sig_num).c_str());
   std::exit(sig_num);
 }
 
@@ -67,16 +71,47 @@ std::string _CreateLogStr(const yeti::LogData& log_data) {
   subs["%(LEVEL)"] = log_data.level;
   subs["%(FILENAME)"] = log_data.filename;
   subs["%(FUNCNAME)"] = log_data.funcname;
-  subs["%(PID)"] = std::to_string(log_data.pid);
-
-  std::hash<std::thread::id> hash_fn;
-  std::ostringstream oss;
-  oss << std::hex << std::uppercase << hash_fn(log_data.tid);
-  subs["%(TID)"] = oss.str();
-
-  subs["%(LINE)"] = std::to_string(log_data.line);
   subs["%(MSG)"] = log_data.msg;
-  subs["%(MSG_ID)"] = std::to_string(log_data.msg_id);
+
+  if (log_data.log_format.find("%(PID)") != std::string::npos) {
+    subs["%(PID)"] = std::to_string(log_data.pid);
+  }
+
+  if (log_data.log_format.find("%(TID)") != std::string::npos) {
+    std::hash<std::thread::id> hash_fn;
+    std::ostringstream oss;
+    oss << std::hex << std::uppercase << hash_fn(log_data.tid);
+    subs["%(TID)"] = oss.str();
+  }
+
+  if (log_data.log_format.find("%(DATE)") != std::string::npos) {
+    using namespace std::chrono;
+    char date_buf[16] = { 0 };
+    auto sec = duration_cast<seconds>(log_data.time.time_since_epoch());
+    std::time_t t = sec.count();
+    std::strftime(date_buf, sizeof(date_buf), "%F", std::localtime(&t));
+    subs["%(DATE)"] = date_buf;
+  }
+
+  if (log_data.log_format.find("%(TIME)") != std::string::npos) {
+    using namespace std::chrono;
+    char time_buf[32] = { 0 };
+    auto nanos = duration_cast<nanoseconds>(log_data.time.time_since_epoch());
+    auto sec = duration_cast<seconds>(log_data.time.time_since_epoch());
+    std::time_t t = sec.count();
+    std::size_t frac = nanos.count() % 1000000000;
+    std::strftime(time_buf, sizeof(time_buf), "%T", std::localtime(&t));
+    std::string time_str = std::string(time_buf) + "." + std::to_string(frac);
+    subs["%(TIME)"] = time_str;
+  }
+
+  if (log_data.log_format.find("%(LINE)") != std::string::npos) {
+    subs["%(LINE)"] = std::to_string(log_data.line);
+  }
+
+  if (log_data.log_format.find("%(MSG_ID)") != std::string::npos) {
+    subs["%(MSG_ID)"] = std::to_string(log_data.msg_id);
+  }
 
   std::string result = log_data.log_format;
   size_t pos = 0;
@@ -90,6 +125,7 @@ std::string _CreateLogStr(const yeti::LogData& log_data) {
 
 void _EnqueueLogTask(LogData* log_data) {
   log_data->log_format = yeti::Logger::instance().GetFormatStr();
+  log_data->time = std::chrono::high_resolution_clock::now();
   log_data->pid = getpid();
   log_data->tid = std::this_thread::get_id();
   log_data->fd = yeti::Logger::instance().GetFileDesc();
