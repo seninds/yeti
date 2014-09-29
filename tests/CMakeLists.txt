@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 project(yeti_test)
 
 if(MINGW OR UNIX)
-    add_definitions(-std=gnu++11)
+    add_definitions(-pthread -std=gnu++11)
 endif()
 
 if(MSVC)
@@ -24,10 +24,11 @@ if(MSVC)
     source_group("Source Files\\yeti_test" FILES ${sources_yeti_test})
 endif()
 
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread -std=gnu++11 -Wl,--no-as-needed")
 
 add_executable( yeti_test ${sources})
 
-target_link_libraries(yeti_test yeti)
+target_link_libraries(yeti_test yeti pthread)
 
 
 

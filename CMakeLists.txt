@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 project(yeti)
 
 if(MINGW OR UNIX)
-    add_definitions(-std=gnu++11)
+    add_definitions(-pthread -std=gnu++11)
 endif()
 
 if(MSVC)
