@@ -1,4 +1,5 @@
 TODO list:
+* margins for time stamps
 * precalc %(TIME) etc. in log format to speed up logging
 * add opportunity to set date and time in format string
 * add define param to set all macros to void
