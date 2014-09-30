@@ -134,9 +134,16 @@ void _EnqueueLogTask(LogData* log_data) {
   LogData printed_data = *log_data;
   auto print_func = [printed_data, is_colored] {
     std::string log_str = _CreateLogStr(printed_data) + "\n";
+
+// To colorize stdout and stderr in Windows cmd.exe it is necessary
+// to include windows.h and use SetConsoleTextAttribute().
+// It is terrible, so I decided to disable coloring at WIN32 platform.
+#ifndef _WIN32
     if (isatty(fileno(printed_data.fd)) != 0 && is_colored) {
       log_str = printed_data.color + log_str + std::string(YETI_RESET);
     }
+#endif  // _WIN32
+
     std::fprintf(printed_data.fd, log_str.c_str());
   };
 
