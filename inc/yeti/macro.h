@@ -86,9 +86,11 @@ struct LogData {
   std::chrono::high_resolution_clock::time_point time;
 };
 
+// ------------ auxiliary functions ------------
 void _EnqueueLogTask(yeti::LogData* log_data);
 std::size_t _GetMsgId();
 void _IncMsgId();
+// ---------------------------------------------
 
 }  // namespace yeti
 

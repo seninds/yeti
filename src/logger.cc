@@ -25,6 +25,7 @@
 // yeti - C++ lightweight threadsafe logging
 // URL: https://github.com/seninds/yeti.git
 
+#include <list>
 #include <src/logger.h>
 
 namespace yeti {
@@ -45,6 +46,7 @@ Logger& Logger::instance() {
   static Logger logger;
 
   // register signals to flush log on them
+  // (logger instance should have been already created at this moment)
   static bool is_registered = false;
   static std::mutex mutex;
   if (!is_registered) {
@@ -77,6 +79,7 @@ void Logger::EnqueueTask(const std::function<void()>& queue_func) {
 void Logger::Shutdown() {
   // set flag to stop processing loop
   stop_loop_ = true;
+  cv_.notify_one();
   if (thread_.joinable()) {
     thread_.join();
   }
@@ -86,13 +89,21 @@ void Logger::ProcessingLoop() {
   // start processing loop
   do {
     std::unique_lock<std::mutex> queue_lock(queue_mutex_);
-    cv_.wait_for(queue_lock, std::chrono::milliseconds(1000),
-                 [this] { return !this->queue_.empty(); });
+    cv_.wait(queue_lock, [this] { return !this->queue_.empty(); });
+
+    // build execution list
+    std::list<std::function<void()>> exec_list;
     while (!queue_.empty()) {
-      queue_.front()();
+      exec_list.push_back(queue_.front());
       queue_.pop();
     }
-  } while (!stop_loop_);
+    queue_mutex_.unlock();
+
+    // execute all elements from execution list
+    for (const auto& functor : exec_list) {
+      functor();
+    }
+  } while (!stop_loop_ || queue_.size());
 }
 
 void Logger::SetFormatStr(const std::string& format_str) noexcept {
