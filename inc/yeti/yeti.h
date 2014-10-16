@@ -1,3 +1,8 @@
+/**
+ * @file yeti.h
+ * @brief Base functions to control logging process.
+ */
+
 // Copyright (c) 2014, Dmitry Senin (seninds@gmail.com)
 // All rights reserved.
 //

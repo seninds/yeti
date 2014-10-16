@@ -1,3 +1,8 @@
+/**
+ * @file macro.h
+ * @brief Macro definitions for logging.
+ */
+
 // Copyright (c) 2014, Dmitry Senin (seninds@gmail.com)
 // All rights reserved.
 //
@@ -45,6 +50,7 @@
 
 #define MAX_MSG_LENGTH 512
 
+/// @cond
 
 #define YETI_BALCK   "\033[0;30m"
 #define YETI_ORANGE  "\033[0;33m"
@@ -67,7 +73,6 @@
 
 #define YETI_HIGH    "\033[1m"
 #define YETI_RESET   "\033[0m"
-
 
 namespace yeti {
 
@@ -94,6 +99,7 @@ void _IncMsgId();
 
 }  // namespace yeti
 
+// @endcond
 
 #ifdef DISABLE_LOGGING
 
@@ -106,6 +112,9 @@ void _IncMsgId();
 
 #else  // DISABLE_LOGGING
 
+/**
+ * @brief Logs critical error message using specified printf-like format.
+ */
 #define CRITICAL(fmt, ...) { \
   yeti::LogData data; \
   data.level = "CRITICAL"; \
@@ -123,6 +132,9 @@ void _IncMsgId();
   yeti::_EnqueueLogTask(&data); \
 }
 
+/**
+ * @brief Logs error message using specified printf-like format.
+ */
 #define ERROR(fmt, ...) { \
   std::size_t msg_id = yeti::_GetMsgId(); \
   yeti::_IncMsgId(); \
@@ -143,6 +155,9 @@ void _IncMsgId();
   } \
 }
 
+/**
+ * @brief Logs warning message using specified printf-like format.
+ */
 #define WARN(fmt, ...) { \
   std::size_t msg_id = yeti::_GetMsgId(); \
   yeti::_IncMsgId(); \
@@ -163,6 +178,9 @@ void _IncMsgId();
   } \
 }
 
+/**
+ * @brief Logs informational message using specified printf-like format.
+ */
 #define INFO(fmt, ...) { \
   std::size_t msg_id = yeti::_GetMsgId(); \
   yeti::_IncMsgId(); \
@@ -183,6 +201,9 @@ void _IncMsgId();
   } \
 }
 
+/**
+ * @brief Logs debug message using specified printf-like format.
+ */
 #define DEBUG(fmt, ...) { \
   std::size_t msg_id = yeti::_GetMsgId(); \
   yeti::_IncMsgId(); \
@@ -203,6 +224,9 @@ void _IncMsgId();
   } \
 }
 
+/**
+ * @brief Logs trace message using specified printf-like format.
+ */
 #define TRACE(fmt, ...) { \
   std::size_t msg_id = yeti::_GetMsgId(); \
   yeti::_IncMsgId(); \
