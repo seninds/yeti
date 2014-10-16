@@ -170,3 +170,12 @@ __OUTPUT: /tmp/test.log__
 ## LICENCE
 
 __Yeti__ is distributed with a BSD license
+
+
+## Documentation
+
+Use doxygen to create documentation:
+~~~~~~
+cd <yeti-root>/docs  # where <yeti-root> -- path to yeti project (example: /home/user/workspace/yeti)
+doxygen Doxyfile
+~~~~~~
