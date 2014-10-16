@@ -1,5 +1,2 @@
 TODO list:
-* avoid ANSI escape codes for coloring at Win32
-* margins for time stamps
-* precalc %(TIME) etc. in log format to speed up logging
-* add define param to set all macros to void
+* margins for all tags in logger format string

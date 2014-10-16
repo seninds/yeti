@@ -95,6 +95,17 @@ void _IncMsgId();
 }  // namespace yeti
 
 
+#ifdef DISABLE_LOGGING
+
+#define CRITICAL(fmt, ...) ((void) 0)
+#define ERROR(fmt, ...) ((void) 0)
+#define WARN(fmt, ...) ((void) 0)
+#define INFO(fmt, ...) ((void) 0)
+#define DEBUG(fmt, ...) ((void) 0)
+#define TRACE(fmt, ...) ((void) 0)
+
+#else  // DISABLE_LOGGING
+
 #define CRITICAL(fmt, ...) { \
   yeti::LogData data; \
   data.level = "CRITICAL"; \
@@ -211,5 +222,7 @@ void _IncMsgId();
     yeti::_EnqueueLogTask(&data); \
   } \
 }
+
+#endif  // DISABLE_LOGGING
 
 #endif  // INC_YETI_MACRO_H_

@@ -46,7 +46,7 @@ To use __Yeti__ you should:
 * build __yeti__ lib and link with it your project.
 
 Logging has a lazy initialization, so if you don't use it you will not have any
-overhead. Just add into your code following macros:
+overhead. Just add into your code following macros to log something:
 ~~~~~~
 CRITICAL(msg_fmt, ...);
 ERROR(msg_fmt, ...);
@@ -70,6 +70,15 @@ namespace yeti {
   std::string GetLogFormatStr() noexcept;
 }
 ~~~~~~
+
+If you want to test your application (for example, for profiling) without logging
+you should add _DISABLE_LOGGING_ definition before including header _yeti.h_:
+~~~~~~
+#define DISABLE_LOGGING
+// ...
+#include <yeti/yeti.h>
+~~~~~~
+This instruction sets all logging macros to <i>((void)0)</i>.
 
 ## Requirements
 
