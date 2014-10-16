@@ -39,12 +39,12 @@ namespace yeti {
 
 /**
  * Macros for logging (printf-like format):
- *   TRACE(format, ...);
- *   DEBUG(format, ...);
- *   INFO(format, ...);
- *   WARN(format, ...);
- *   ERROR(format, ...);
- *   CRITICAL(format, ...);
+ *   TRACE(msg_fmt, ...);
+ *   DEBUG(msg_fmt, ...);
+ *   INFO(msg_fmt, ...);
+ *   WARN(msg_fmt, ...);
+ *   ERROR(msg_fmt, ...);
+ *   CRITICAL(msg_fmt, ...);
  */
 
 /** @brief Constants to set current logging level. */
