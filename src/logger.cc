@@ -25,7 +25,7 @@
 // yeti - C++ lightweight threadsafe logging
 // URL: https://github.com/seninds/yeti.git
 
-#include <yeti/logger.h>
+#include <src/logger.h>
 
 namespace yeti {
 

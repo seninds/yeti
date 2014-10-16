@@ -34,6 +34,7 @@
 #include <sstream>
 #include <string>
 #include <thread>
+#include <yeti/yeti.h>
 
 #if defined(__clang__)
 #  pragma clang diagnostic ignored "-Wformat-security"
@@ -41,14 +42,53 @@
 #  pragma GCC diagnostic ignored "-Wformat-security"
 #endif  // ignored "-Wformat-security"
 
+
 #define MAX_MSG_LENGTH 512
 
-#include <yeti/color.h>
-#include <yeti/log_data.h>
+
+#define YETI_BALCK   "\033[0;30m"
+#define YETI_ORANGE  "\033[0;33m"
+#define YETI_BLUE    "\033[0;34m"
+#define YETI_GREEN   "\033[0;32m"
+#define YETI_CYAN    "\033[0;36m"
+#define YETI_RED     "\033[0;31m"
+#define YETI_PURPLE  "\033[0;35m"
+#define YETI_BROWN   "\033[0;33m"
+#define YETI_GRAY    "\033[0;37m"
+
+#define YETI_DGRAY   "\033[1;30m"
+#define YETI_LBLUE   "\033[1;34m"
+#define YETI_LGREEN  "\033[1;32m"
+#define YETI_LCYAN   "\033[1;36m"
+#define YETI_LRED    "\033[1;31m"
+#define YETI_LPURPLE "\033[1;35m"
+#define YETI_YELLOW  "\033[1;33m"
+#define YETI_WHITE   "\033[1;37m"
+
+#define YETI_HIGH    "\033[1m"
+#define YETI_RESET   "\033[0m"
+
 
 namespace yeti {
 
+struct LogData {
+  std::string log_format;
+  std::string level;
+  std::string color;
+  std::string filename;
+  std::string funcname;
+  pid_t pid;
+  std::thread::id tid;
+  int line;
+  FILE* fd;
+  std::size_t msg_id;
+  std::string msg;
+  std::chrono::high_resolution_clock::time_point time;
+};
+
 void _EnqueueLogTask(yeti::LogData* log_data);
+std::size_t _GetMsgId();
+void _IncMsgId();
 
 }  // namespace yeti
 
@@ -60,8 +100,8 @@ void _EnqueueLogTask(yeti::LogData* log_data);
   data.filename = __FILE__; \
   data.funcname = __func__; \
   data.line = __LINE__; \
-  data.msg_id = yeti::Logger::instance().GetMsgId(); \
-  yeti::Logger::instance().IncMsgId(); \
+  data.msg_id = yeti::_GetMsgId(); \
+  yeti::_IncMsgId(); \
   \
   char msg[MAX_MSG_LENGTH] = { 0 }; \
   std::snprintf(msg, sizeof(msg), fmt, ##__VA_ARGS__); \
@@ -71,9 +111,9 @@ void _EnqueueLogTask(yeti::LogData* log_data);
 }
 
 #define ERROR(fmt, ...) { \
-  std::size_t msg_id = yeti::Logger::instance().GetMsgId(); \
-  yeti::Logger::instance().IncMsgId(); \
-  if (yeti::Logger::instance().GetLevel() >= yeti::LOG_LEVEL_ERROR) { \
+  std::size_t msg_id = yeti::_GetMsgId(); \
+  yeti::_IncMsgId(); \
+  if (yeti::GetLogLevel() >= yeti::LOG_LEVEL_ERROR) { \
     yeti::LogData data; \
     data.level = "ERROR"; \
     data.color = YETI_LPURPLE; \
@@ -91,9 +131,9 @@ void _EnqueueLogTask(yeti::LogData* log_data);
 }
 
 #define WARN(fmt, ...) { \
-  std::size_t msg_id = yeti::Logger::instance().GetMsgId(); \
-  yeti::Logger::instance().IncMsgId(); \
-  if (yeti::Logger::instance().GetLevel() >= yeti::LOG_LEVEL_WARNING) { \
+  std::size_t msg_id = yeti::_GetMsgId(); \
+  yeti::_IncMsgId(); \
+  if (yeti::GetLogLevel() >= yeti::LOG_LEVEL_WARNING) { \
     yeti::LogData data; \
     data.level = "WARNING"; \
     data.color = YETI_YELLOW; \
@@ -111,9 +151,9 @@ void _EnqueueLogTask(yeti::LogData* log_data);
 }
 
 #define INFO(fmt, ...) { \
-  std::size_t msg_id = yeti::Logger::instance().GetMsgId(); \
-  yeti::Logger::instance().IncMsgId(); \
-  if (yeti::Logger::instance().GetLevel() >= yeti::LOG_LEVEL_INFO) { \
+  std::size_t msg_id = yeti::_GetMsgId(); \
+  yeti::_IncMsgId(); \
+  if (yeti::GetLogLevel() >= yeti::LOG_LEVEL_INFO) { \
     yeti::LogData data; \
     data.level = "INFO"; \
     data.color = YETI_LGREEN; \
@@ -131,9 +171,9 @@ void _EnqueueLogTask(yeti::LogData* log_data);
 }
 
 #define DEBUG(fmt, ...) { \
-  std::size_t msg_id = yeti::Logger::instance().GetMsgId(); \
-  yeti::Logger::instance().IncMsgId(); \
-  if (yeti::Logger::instance().GetLevel() >= yeti::LOG_LEVEL_DEBUG) { \
+  std::size_t msg_id = yeti::_GetMsgId(); \
+  yeti::_IncMsgId(); \
+  if (yeti::GetLogLevel() >= yeti::LOG_LEVEL_DEBUG) { \
     yeti::LogData data; \
     data.level = "DEBUG"; \
     data.color = YETI_WHITE; \
@@ -151,9 +191,9 @@ void _EnqueueLogTask(yeti::LogData* log_data);
 }
 
 #define TRACE(fmt, ...) { \
-  std::size_t msg_id = yeti::Logger::instance().GetMsgId(); \
-  yeti::Logger::instance().IncMsgId(); \
-  if (yeti::Logger::instance().GetLevel() >= yeti::LOG_LEVEL_TRACE) { \
+  std::size_t msg_id = yeti::_GetMsgId(); \
+  yeti::_IncMsgId(); \
+  if (yeti::GetLogLevel() >= yeti::LOG_LEVEL_TRACE) { \
     yeti::LogData data; \
     data.level = "TRACE"; \
     data.color = ""; \

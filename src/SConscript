@@ -1,12 +1,12 @@
 env = Environment()
 
 root_dir = "../"
-inc_dir = root_dir + "inc/"
+inc_dirs = [root_dir, root_dir + "inc/"]
 
 src_files = ["yeti.cc", "logger.cc"]
 
 env.Replace(CC = "clang", CXX = "clang++")
-env.Append(CPPPATH = [inc_dir])
+env.Append(CPPPATH = inc_dirs)
 env.Append(CCFLAGS = ["-O3", "-std=c++11"])
 env.Append(LINKFLAGS = ["-pthread"])
 

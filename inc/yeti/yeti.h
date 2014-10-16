@@ -31,13 +31,31 @@
 #include <cstdio>
 #include <string>
 
-#include <yeti/log_level.h>
-
 /**
  * @namespace yeti
  * <b>yeti</b> namespace contains all necessary functions to control logging.
  */
 namespace yeti {
+
+/**
+ * Macros for logging (printf-like format):
+ *   TRACE(format, ...);
+ *   DEBUG(format, ...);
+ *   INFO(format, ...);
+ *   WARN(format, ...);
+ *   ERROR(format, ...);
+ *   CRITICAL(format, ...);
+ */
+
+/** @brief Constants to set current logging level. */
+enum LogLevel {
+  LOG_LEVEL_CRITICAL,
+  LOG_LEVEL_ERROR,
+  LOG_LEVEL_WARNING,
+  LOG_LEVEL_INFO,
+  LOG_LEVEL_DEBUG,
+  LOG_LEVEL_TRACE
+};
 
 /** @brief Sets logging level. */
 void SetLogLevel(LogLevel level) noexcept;
@@ -96,7 +114,6 @@ std::string GetLogFormatStr() noexcept;
 
 }  // namespace yeti
 
-#include <yeti/yeti-inl.h>
 #include <yeti/macro.h>
 
 #endif  // INC_YETI_YETI_H_

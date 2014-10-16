@@ -28,6 +28,7 @@
 #include <yeti/yeti.h>
 
 #include <csignal>
+#include <cstdio>
 #include <cstdlib>
 #include <ctime>
 
@@ -36,7 +37,7 @@
 #include <map>
 #include <mutex>
 #include <string>
-#include <yeti/logger.h>
+#include <src/logger.h>
 
 namespace yeti {
 
@@ -48,6 +49,42 @@ const std::map<int, std::string> SIGNAME = {
     { SIGSEGV, "SIGSEGV" },
     { SIGTERM, "SIGTERM" }
 };
+
+void SetLogLevel(LogLevel level) noexcept {
+  Logger::instance().SetLevel(level);
+}
+
+int GetLogLevel() noexcept {
+  return Logger::instance().GetLevel();
+}
+
+void SetLogColored(bool is_colored) noexcept {
+  Logger::instance().SetColored(is_colored);
+}
+
+bool IsLogColored() noexcept {
+  return Logger::instance().IsColored();
+}
+
+void SetLogFileDesc(FILE* fd) noexcept {
+  Logger::instance().SetFileDesc(fd);
+}
+
+FILE* GetLogFileDesc() noexcept {
+  return Logger::instance().GetFileDesc();
+}
+
+void CloseLogFileDesc(FILE* fd) {
+  Logger::instance().CloseFileDesc(fd);
+}
+
+void SetLogFormatStr(const std::string& format_str) noexcept {
+  Logger::instance().SetFormatStr(format_str);
+}
+
+std::string GetLogFormatStr() noexcept {
+  return Logger::instance().GetFormatStr();
+}
 
 void ShutdownLog() {
   yeti::Logger::instance().Shutdown();
@@ -64,6 +101,14 @@ void RegisterSignals() {
   for (const auto& entry : SIGNAME) {
     signal(entry.first, SignalHandler);
   }
+}
+
+std::size_t _GetMsgId() {
+  return yeti::Logger::instance().GetMsgId();
+}
+
+void _IncMsgId() {
+  yeti::Logger::instance().IncMsgId();
 }
 
 std::string _CreateLogStr(const yeti::LogData& log_data) {
@@ -137,7 +182,7 @@ void _EnqueueLogTask(LogData* log_data) {
 
 // To colorize stdout and stderr in Windows cmd.exe it is necessary
 // to include windows.h and use SetConsoleTextAttribute().
-// It is terrible, so I decided to disable coloring at WIN32 platform.
+// It is terrible, so I decided to disable coloring on WIN32 platform.
 #ifndef _WIN32
     if (isatty(fileno(printed_data.fd)) != 0 && is_colored) {
       log_str = printed_data.color + log_str + std::string(YETI_RESET);

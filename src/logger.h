@@ -36,7 +36,7 @@
 #include <queue>
 #include <string>
 #include <thread>
-#include <yeti/log_level.h>
+#include <yeti/yeti.h>
 
 namespace yeti {
 
