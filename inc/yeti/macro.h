@@ -116,42 +116,42 @@ void _IncMsgId();
  * @brief Logs critical error message using specified printf-like format.
  */
 #define CRITICAL(fmt, ...) { \
-  yeti::LogData data; \
-  data.level = "CRITICAL"; \
-  data.color = YETI_LRED; \
-  data.filename = __FILE__; \
-  data.funcname = __func__; \
-  data.line = __LINE__; \
-  data.msg_id = yeti::_GetMsgId(); \
+  yeti::LogData yeti_log_data; \
+  yeti_log_data.level = "CRITICAL"; \
+  yeti_log_data.color = YETI_LRED; \
+  yeti_log_data.filename = __FILE__; \
+  yeti_log_data.funcname = __func__; \
+  yeti_log_data.line = __LINE__; \
+  yeti_log_data.msg_id = yeti::_GetMsgId(); \
   yeti::_IncMsgId(); \
   \
-  char msg[MAX_MSG_LENGTH] = { 0 }; \
-  std::snprintf(msg, sizeof(msg), fmt, ##__VA_ARGS__); \
-  data.msg = msg; \
+  char yeti_log_msg[MAX_MSG_LENGTH] = { 0 }; \
+  std::snprintf(yeti_log_msg, sizeof(yeti_log_msg), fmt, ##__VA_ARGS__); \
+  yeti_log_data.msg = yeti_log_msg; \
   \
-  yeti::_EnqueueLogTask(&data); \
+  yeti::_EnqueueLogTask(&yeti_log_data); \
 }
 
 /**
  * @brief Logs error message using specified printf-like format.
  */
 #define ERROR(fmt, ...) { \
-  std::size_t msg_id = yeti::_GetMsgId(); \
+  std::size_t yeti_lot_msg_id = yeti::_GetMsgId(); \
   yeti::_IncMsgId(); \
   if (yeti::GetLogLevel() >= yeti::LOG_LEVEL_ERROR) { \
-    yeti::LogData data; \
-    data.level = "ERROR"; \
-    data.color = YETI_LPURPLE; \
-    data.filename = __FILE__; \
-    data.funcname = __func__; \
-    data.line = __LINE__; \
-    data.msg_id = msg_id; \
+    yeti::LogData yeti_log_data; \
+    yeti_log_data.level = "ERROR"; \
+    yeti_log_data.color = YETI_LPURPLE; \
+    yeti_log_data.filename = __FILE__; \
+    yeti_log_data.funcname = __func__; \
+    yeti_log_data.line = __LINE__; \
+    yeti_log_data.msg_id = yeti_lot_msg_id; \
     \
-    char msg[MAX_MSG_LENGTH] = { 0 }; \
-    std::snprintf(msg, sizeof(msg), fmt, ##__VA_ARGS__); \
-    data.msg = msg; \
+    char yeti_log_msg[MAX_MSG_LENGTH] = { 0 }; \
+    std::snprintf(yeti_log_msg, sizeof(yeti_log_msg), fmt, ##__VA_ARGS__); \
+    yeti_log_data.msg = yeti_log_msg; \
     \
-    yeti::_EnqueueLogTask(&data); \
+    yeti::_EnqueueLogTask(&yeti_log_data); \
   } \
 }
 
@@ -159,22 +159,22 @@ void _IncMsgId();
  * @brief Logs warning message using specified printf-like format.
  */
 #define WARN(fmt, ...) { \
-  std::size_t msg_id = yeti::_GetMsgId(); \
+  std::size_t yeti_lot_msg_id = yeti::_GetMsgId(); \
   yeti::_IncMsgId(); \
   if (yeti::GetLogLevel() >= yeti::LOG_LEVEL_WARNING) { \
-    yeti::LogData data; \
-    data.level = "WARNING"; \
-    data.color = YETI_YELLOW; \
-    data.filename = __FILE__; \
-    data.funcname = __func__; \
-    data.line = __LINE__; \
-    data.msg_id = msg_id; \
+    yeti::LogData yeti_log_data; \
+    yeti_log_data.level = "WARNING"; \
+    yeti_log_data.color = YETI_YELLOW; \
+    yeti_log_data.filename = __FILE__; \
+    yeti_log_data.funcname = __func__; \
+    yeti_log_data.line = __LINE__; \
+    yeti_log_data.msg_id = yeti_lot_msg_id; \
     \
-    char msg[MAX_MSG_LENGTH] = { 0 }; \
-    std::snprintf(msg, sizeof(msg), fmt, ##__VA_ARGS__); \
-    data.msg = msg; \
+    char yeti_log_msg[MAX_MSG_LENGTH] = { 0 }; \
+    std::snprintf(yeti_log_msg, sizeof(yeti_log_msg), fmt, ##__VA_ARGS__); \
+    yeti_log_data.msg = yeti_log_msg; \
     \
-    yeti::_EnqueueLogTask(&data); \
+    yeti::_EnqueueLogTask(&yeti_log_data); \
   } \
 }
 
@@ -182,22 +182,22 @@ void _IncMsgId();
  * @brief Logs informational message using specified printf-like format.
  */
 #define INFO(fmt, ...) { \
-  std::size_t msg_id = yeti::_GetMsgId(); \
+  std::size_t yeti_lot_msg_id = yeti::_GetMsgId(); \
   yeti::_IncMsgId(); \
   if (yeti::GetLogLevel() >= yeti::LOG_LEVEL_INFO) { \
-    yeti::LogData data; \
-    data.level = "INFO"; \
-    data.color = YETI_LGREEN; \
-    data.filename = __FILE__; \
-    data.funcname = __func__; \
-    data.line = __LINE__; \
-    data.msg_id = msg_id; \
+    yeti::LogData yeti_log_data; \
+    yeti_log_data.level = "INFO"; \
+    yeti_log_data.color = YETI_LGREEN; \
+    yeti_log_data.filename = __FILE__; \
+    yeti_log_data.funcname = __func__; \
+    yeti_log_data.line = __LINE__; \
+    yeti_log_data.msg_id = yeti_lot_msg_id; \
     \
-    char msg[MAX_MSG_LENGTH] = { 0 }; \
-    std::snprintf(msg, sizeof(msg), fmt, ##__VA_ARGS__); \
-    data.msg = msg; \
+    char yeti_log_msg[MAX_MSG_LENGTH] = { 0 }; \
+    std::snprintf(yeti_log_msg, sizeof(yeti_log_msg), fmt, ##__VA_ARGS__); \
+    yeti_log_data.msg = yeti_log_msg; \
     \
-    yeti::_EnqueueLogTask(&data); \
+    yeti::_EnqueueLogTask(&yeti_log_data); \
   } \
 }
 
@@ -205,22 +205,22 @@ void _IncMsgId();
  * @brief Logs debug message using specified printf-like format.
  */
 #define DEBUG(fmt, ...) { \
-  std::size_t msg_id = yeti::_GetMsgId(); \
+  std::size_t yeti_lot_msg_id = yeti::_GetMsgId(); \
   yeti::_IncMsgId(); \
   if (yeti::GetLogLevel() >= yeti::LOG_LEVEL_DEBUG) { \
-    yeti::LogData data; \
-    data.level = "DEBUG"; \
-    data.color = YETI_WHITE; \
-    data.filename = __FILE__; \
-    data.funcname = __func__; \
-    data.line = __LINE__; \
-    data.msg_id = msg_id; \
+    yeti::LogData yeti_log_data; \
+    yeti_log_data.level = "DEBUG"; \
+    yeti_log_data.color = YETI_WHITE; \
+    yeti_log_data.filename = __FILE__; \
+    yeti_log_data.funcname = __func__; \
+    yeti_log_data.line = __LINE__; \
+    yeti_log_data.msg_id = yeti_lot_msg_id; \
     \
-    char msg[MAX_MSG_LENGTH] = { 0 }; \
-    std::snprintf(msg, sizeof(msg), fmt, ##__VA_ARGS__); \
-    data.msg = msg; \
+    char yeti_log_msg[MAX_MSG_LENGTH] = { 0 }; \
+    std::snprintf(yeti_log_msg, sizeof(yeti_log_msg), fmt, ##__VA_ARGS__); \
+    yeti_log_data.msg = yeti_log_msg; \
     \
-    yeti::_EnqueueLogTask(&data); \
+    yeti::_EnqueueLogTask(&yeti_log_data); \
   } \
 }
 
@@ -228,22 +228,22 @@ void _IncMsgId();
  * @brief Logs trace message using specified printf-like format.
  */
 #define TRACE(fmt, ...) { \
-  std::size_t msg_id = yeti::_GetMsgId(); \
+  std::size_t yeti_lot_msg_id = yeti::_GetMsgId(); \
   yeti::_IncMsgId(); \
   if (yeti::GetLogLevel() >= yeti::LOG_LEVEL_TRACE) { \
-    yeti::LogData data; \
-    data.level = "TRACE"; \
-    data.color = ""; \
-    data.filename = __FILE__; \
-    data.funcname = __func__; \
-    data.line = __LINE__; \
-    data.msg_id = msg_id; \
+    yeti::LogData yeti_log_data; \
+    yeti_log_data.level = "TRACE"; \
+    yeti_log_data.color = ""; \
+    yeti_log_data.filename = __FILE__; \
+    yeti_log_data.funcname = __func__; \
+    yeti_log_data.line = __LINE__; \
+    yeti_log_data.msg_id = yeti_lot_msg_id; \
     \
-    char msg[MAX_MSG_LENGTH] = { 0 }; \
-    std::snprintf(msg, sizeof(msg), fmt, ##__VA_ARGS__); \
-    data.msg = msg; \
+    char yeti_log_msg[MAX_MSG_LENGTH] = { 0 }; \
+    std::snprintf(yeti_log_msg, sizeof(yeti_log_msg), fmt, ##__VA_ARGS__); \
+    yeti_log_data.msg = yeti_log_msg; \
     \
-    yeti::_EnqueueLogTask(&data); \
+    yeti::_EnqueueLogTask(&yeti_log_data); \
   } \
 }
 
