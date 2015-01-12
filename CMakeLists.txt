@@ -21,6 +21,7 @@ list(APPEND sources ${sources_yeti})
 list(APPEND sources ${sources_yeti_h})
 
 include_directories (inc)
+include_directories (.)
 
 if(MSVC)
     source_group("Source Files\\yeti" FILES ${sources_yeti})
