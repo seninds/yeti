@@ -28,8 +28,7 @@
 #include <yeti/yeti.h>
 
 
-void TestLog(yeti::LogLevel level) {
-  yeti::SetLogLevel(level);
+void TestLog() {
   TRACE("some trace info");
 
   std::string debug_str = "test string";
@@ -46,24 +45,33 @@ void TestLog(yeti::LogLevel level) {
 
 
 int main(int argc, char* argv[]) {
+  TestLog();
+
   yeti::SetLogColored(true);  // turn on log colorization
-  TestLog(yeti::LOG_LEVEL_TRACE);
+  yeti::SetLogLevel(yeti::LOG_LEVEL_TRACE);
+  TestLog();
+
   yeti::SetLogFormatStr(
       "[%(LEVEL)] <%(DATE) %(TIME)> %(FILENAME): %(LINE): %(MSG)");
-  TestLog(yeti::LOG_LEVEL_DEBUG);
+  yeti::SetLogLevel(yeti::LOG_LEVEL_DEBUG);
+  TestLog();
 
   yeti::SetLogColored(false);  // turn off log colorization
   yeti::SetLogFormatStr(
       "%(MSG_ID) [%(LEVEL)] <%(TID)> %(FILENAME): %(LINE): %(MSG)");
-  TestLog(yeti::LOG_LEVEL_INFO);
+  yeti::SetLogLevel(yeti::LOG_LEVEL_INFO);
+  TestLog();
 
   FILE* fd = std::fopen("/tmp/test.log", "w");
   yeti::SetLogFileDesc(fd);  // start logging into specified file
-  TestLog(yeti::LOG_LEVEL_WARNING);
+  yeti::SetLogLevel(yeti::LOG_LEVEL_WARNING);
+  TestLog();
   yeti::SetLogFormatStr("[%(LEVEL)] [%(PID):%(TID)] %(FUNCNAME)(): %(MSG)");
-  TestLog(yeti::LOG_LEVEL_ERROR);
+  yeti::SetLogLevel(yeti::LOG_LEVEL_ERROR);
+  TestLog();
   yeti::SetLogColored(true);
-  TestLog(yeti::LOG_LEVEL_CRITICAL);
+  yeti::SetLogLevel(yeti::LOG_LEVEL_CRITICAL);
+  TestLog();
   yeti::CloseLogFileDesc();  // enqueue closing file descriptor
 
   return 0;

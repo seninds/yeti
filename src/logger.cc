@@ -25,7 +25,11 @@
 // yeti - C++ lightweight threadsafe logging
 // URL: https://github.com/seninds/yeti.git
 
+#include <cstdlib>
 #include <list>
+#include <algorithm>
+#include <map>
+
 #include <src/logger.h>
 
 namespace yeti {
@@ -38,7 +42,44 @@ Logger::Logger()
       format_str_("[%(LEVEL)] %(FILENAME): %(LINE): %(MSG)"),
       fd_(stderr) {
   thread_ = std::thread(&Logger::ProcessingLoop, this);
+
+  // check environment variable to set log level
+  level_ = Logger::LogLevelFromEnv(std::getenv("YETI_LOG_LEVEL"));
 }
+
+LogLevel Logger::LogLevelFromEnv(const char* var) {
+  if (var == nullptr) return LogLevel::LOG_LEVEL_INFO;
+
+  std::map<std::vector<std::string>, LogLevel> level_dict = {
+    {{"TRACE", "TRC", "trace", "trc"}, LogLevel::LOG_LEVEL_TRACE},
+    {{"DEBUG", "DBG", "debug", "dbg"}, LogLevel::LOG_LEVEL_DEBUG},
+    {{"INF", "inf"}, LogLevel::LOG_LEVEL_INFO},
+    {{"WARN", "WRN", "warn", "wrn"}, LogLevel::LOG_LEVEL_WARNING},
+    {{"ERR", "err"}, LogLevel::LOG_LEVEL_ERROR},
+    {{"CRIT", "CRT", "crit", "crt"}, LogLevel::LOG_LEVEL_CRITICAL}
+  };
+
+  const std::string env_str = var;
+  auto it = std::find_if(level_dict.begin(), level_dict.end(),
+                         [&env_str] (const std::pair<std::vector<std::string>, LogLevel>& p) {
+                           if (std::find_if(p.first.begin(), p.first.end(),
+                                            [&env_str](const std::string& s) {
+                                              if (env_str.find(s) != std::string::npos) {
+                                                return true;
+                                              }
+                                              return false;
+                                            })
+                               != p.first.end()) {
+                             return true;
+                           }
+                           return false;
+                         });
+  if (it != level_dict.end()) {
+    return it->second;
+  }
+  return LogLevel::LOG_LEVEL_INFO;
+}
+
 
 void RegisterSignals();
 

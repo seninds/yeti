@@ -76,6 +76,9 @@ class Logger {
   /** @brief Closes specified log file descriptor. */
   void CloseFileDesc(FILE* fd = nullptr);
 
+  /** @brief Parse string to set log level. */
+  LogLevel LogLevelFromEnv(const char* var);
+
   /** @brief Sets specified log format. */
   void SetFormatStr(const std::string& format_str) noexcept;
   /** @brief Returns current log format. */
