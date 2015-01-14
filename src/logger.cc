@@ -130,7 +130,7 @@ void Logger::ProcessingLoop() {
   // start processing loop
   do {
     std::unique_lock<std::mutex> queue_lock(queue_mutex_);
-    cv_.wait(queue_lock, [this] { return !this->queue_.empty(); });
+    cv_.wait(queue_lock, [this] { return !this->queue_.empty() || stop_loop_; });
 
     // build execution list
     std::list<std::function<void()>> exec_list;
@@ -144,7 +144,7 @@ void Logger::ProcessingLoop() {
     for (const auto& functor : exec_list) {
       functor();
     }
-  } while (!stop_loop_ || queue_.size());
+  } while (!stop_loop_ || !queue_.empty());
 }
 
 void Logger::SetFormatStr(const std::string& format_str) noexcept {
