@@ -91,17 +91,24 @@ Keywords to set log format are:
 
 ### Handle Signals ###
 
-**Yeti** process runs in separate thread, so when some signals (for example, SIGABRT)
+**Yeti** process runs in separate thread, so, when some signals (for example, SIGABRT)
 has been generated, **Yeti** could have non-empty message queue.
-If you don't flush **Yeti** message queue you lose these messages.
+If you don't flush **Yeti** message queue, you will lose these messages.
 
-To flush message queue you can use
-*yeti::RegAllSignals(__sighandler_t = SimpleSignalHandler)* or
-*yeti::RegSignal(int, __sighandler_t = SimpleSignalHandler)* funcions with
-default value for signal handler (this function only flushing message queue).
-You also can set custom signal handler (its signature should be
-*void signal_handler(int)* where you can use *yeti::FlushLog()* function
-to flush message queue by hands.
+To flush message queue you can use functions:
+~~~~~~
+namespace yeti {
+void RegAllSignals(__sighandler_t signal_handler = SimpleSignalHandler);
+void RegSignal(int, __sighandler_t signal_handler = SimpleSignalHandler);
+}
+~~~~~~
+with default value for signal handler (this function only flushing message queue).
+
+You also can set custom signal handler. Its signature should be:
+~~~~~~
+typedef void (*__sighandler_t)(int);
+~~~~~~
+where you can use *yeti::FlushLog()* function to flush message queue by yourself.
 
 Example to set signal handlers:
 ~~~~~~
