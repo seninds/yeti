@@ -101,7 +101,7 @@ void _IncMsgId();
 
 // @endcond
 
-#ifdef DISABLE_LOGGING
+#ifdef YETI_DISABLE_LOGGING
 
 #define CRITICAL(fmt, ...) ((void) 0)
 #define ERROR(fmt, ...) ((void) 0)
@@ -110,7 +110,7 @@ void _IncMsgId();
 #define DEBUG(fmt, ...) ((void) 0)
 #define TRACE(fmt, ...) ((void) 0)
 
-#else  // DISABLE_LOGGING
+#else  // YETI_DISABLE_LOGGING
 
 /**
  * @brief Logs critical error message using specified printf-like format.
@@ -247,6 +247,6 @@ void _IncMsgId();
   } \
 }
 
-#endif  // DISABLE_LOGGING
+#endif  // YETI_DISABLE_LOGGING
 
 #endif  // INC_YETI_MACRO_H_

@@ -91,13 +91,13 @@ Keywords to set log format are:
 
 ### Handle Signals ###
 
-**Yeti** process runs in separate thread, so then some signals (for example, SIGABRT)
-has been generated **Yeti** could have non-empty message queue.
+**Yeti** process runs in separate thread, so when some signals (for example, SIGABRT)
+has been generated, **Yeti** could have non-empty message queue.
 If you don't flush **Yeti** message queue you lose these messages.
 
 To flush message queue you can use
 *yeti::RegAllSignals(__sighandler_t = SimpleSignalHandler)* or
-*yeti::RegSignal(sig_num, __sighandler_t = SimpleSignalHandler)* funcions with
+*yeti::RegSignal(int, __sighandler_t = SimpleSignalHandler)* funcions with
 default value for signal handler (this function only flushing message queue).
 You also can set custom signal handler (its signature should be
 *void signal_handler(int)* where you can use *yeti::FlushLog()* function
@@ -121,9 +121,9 @@ int main() {
 ### Disable Logging ###
 
 If you want to test your application (for example, for profiling) without logging
-you should add *DISABLE_LOGGING* definition before including header *yeti.h*:
+you should add *YETI_DISABLE_LOGGING* definition before including header *yeti.h*:
 ~~~~~~
-#define DISABLE_LOGGING
+#define YETI_DISABLE_LOGGING
 // ...
 #include <yeti/yeti.h>
 ~~~~~~
