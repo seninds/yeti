@@ -29,6 +29,7 @@
 #include <list>
 #include <algorithm>
 #include <map>
+#include <functional>
 
 #include <src/logger.h>
 
@@ -60,20 +61,21 @@ LogLevel Logger::LogLevelFromEnv(const char* var) {
   };
 
   const std::string env_str = var;
-  auto it = std::find_if(level_dict.begin(), level_dict.end(),
-                         [&env_str] (const std::pair<std::vector<std::string>, LogLevel>& p) {
-                           if (std::find_if(p.first.begin(), p.first.end(),
-                                            [&env_str](const std::string& s) {
-                                              if (env_str.find(s) != std::string::npos) {
-                                                return true;
-                                              }
-                                              return false;
-                                            })
-                               != p.first.end()) {
-                             return true;
-                           }
-                           return false;
-                         });
+  auto it = std::find_if(
+      level_dict.begin(), level_dict.end(),
+      [&env_str] (const std::pair<std::vector<std::string>, LogLevel>& p) {
+        if (std::find_if(
+            p.first.begin(), p.first.end(),
+            [&env_str](const std::string& s) {
+              if (env_str.find(s) != std::string::npos) {
+                return true;
+              }
+              return false;
+            }) != p.first.end()) {
+              return true;
+            }
+        return false;
+      });
   if (it != level_dict.end()) {
     return it->second;
   }
@@ -81,19 +83,17 @@ LogLevel Logger::LogLevelFromEnv(const char* var) {
 }
 
 
-void RegisterSignals();
-
 Logger& Logger::instance() {
   static Logger logger;
 
-  // register signals to flush log on them
+  // register Logger::Shutdown() to flush log at exit
   // (logger instance should have been already created at this moment)
   static bool is_registered = false;
   static std::mutex mutex;
   if (!is_registered) {
     std::lock_guard<std::mutex> lock(mutex);
     if (!is_registered) {
-      RegisterSignals();
+      std::atexit([]() { yeti::Logger::instance().Shutdown(); });
       is_registered = true;
     }
   }
@@ -133,18 +133,19 @@ void Logger::ProcessingLoop() {
     cv_.wait(queue_lock, [this] { return !this->queue_.empty() || stop_loop_; });
 
     // build execution list
+    std::lock_guard<std::mutex> exec_lock(exec_list_mutex_);
     std::list<std::function<void()>> exec_list;
     while (!queue_.empty()) {
       exec_list.push_back(queue_.front());
       queue_.pop();
     }
-    queue_mutex_.unlock();
+    queue_lock.unlock();
 
     // execute all elements from execution list
     for (const auto& functor : exec_list) {
       functor();
     }
-  } while (!stop_loop_ || !queue_.empty());
+  } while (!stop_loop_ || !IsQueueEmpty());
 }
 
 void Logger::SetFormatStr(const std::string& format_str) noexcept {
@@ -155,6 +156,23 @@ void Logger::SetFormatStr(const std::string& format_str) noexcept {
 std::string Logger::GetFormatStr() const noexcept {
   std::lock_guard<std::mutex> lock(settings_mutex_);
   return format_str_;
+}
+
+void Logger::Flush() {
+  do {
+    cv_.notify_one();
+    std::lock_guard<std::mutex> exec_list_lock(exec_list_mutex_);
+  } while (!IsQueueEmpty());
+}
+
+bool Logger::IsQueueEmpty() {
+  std::lock_guard<std::mutex> lock(queue_mutex_);
+  return queue_.empty();
+}
+
+std::size_t Logger::QueueLen() {
+  std::lock_guard<std::mutex> lock(queue_mutex_);
+  return queue_.size();
 }
 
 }  // namespace yeti

@@ -29,7 +29,6 @@
 
 #include <csignal>
 #include <cstdio>
-#include <cstdlib>
 #include <ctime>
 
 #include <iostream>
@@ -90,17 +89,23 @@ void ShutdownLog() {
   yeti::Logger::instance().Shutdown();
 }
 
-void SignalHandler(int sig_num) {
-  std::fprintf(stderr, "caught %s: start flushing log...\n",
-               SIGNAME.at(sig_num).c_str());
-  std::exit(sig_num);
+void SimpleSignalHandler(int sig_num) {
+  CRITICAL("caught %s: start flushing log...\n", SIGNAME.at(sig_num).c_str());
+  yeti::Logger::instance().Flush();
 }
 
-void RegisterSignals() {
-  std::atexit(ShutdownLog);
+void RegAllSignals(__sighandler_t signal_handler) {
+  // logger should be instantiated before signals will be registered
+  yeti::Logger::instance();
   for (const auto& entry : SIGNAME) {
-    signal(entry.first, SignalHandler);
+    signal(entry.first, signal_handler);
   }
+}
+
+void RegSignal(int sig_num, __sighandler_t signal_handler) {
+  // logger should be instantiated before signals will be registered
+  yeti::Logger::instance();
+  signal(sig_num, signal_handler);
 }
 
 std::size_t _GetMsgId() {

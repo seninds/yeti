@@ -90,10 +90,20 @@ class Logger {
   /** @brief Shutdowns logging. */
   void Shutdown();
 
+  /** @brief Flush log queue (blocking call). */
+  void Flush();
+
+  /** @brief Return log queue length. */
+  std::size_t QueueLen();
+
+  /** @brief Return is log queue is empty. */
+  bool IsQueueEmpty();
+
  private:
   Logger();
 
   mutable std::mutex queue_mutex_;
+  mutable std::mutex exec_list_mutex_;
   mutable std::mutex settings_mutex_;
   std::condition_variable cv_;
   std::queue<std::function<void()>> queue_;

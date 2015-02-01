@@ -34,6 +34,7 @@
 #define INC_YETI_YETI_H_
 
 #include <cstdio>
+#include <cstdlib>
 #include <string>
 
 /**
@@ -110,12 +111,24 @@ void CloseLogFileDesc(FILE* fd = nullptr);
  * <li> %(TIME)     - local time in HH:MM:SS.SSS format (based on the ISO 8601 time format) </li>
  * </ul>
  *
- * You should always use %(MSG) in format string.
+ * You should always use %(MSG) in format string if you want to log user message.
  */
 void SetLogFormatStr(const std::string& format_str) noexcept;
 
 /** @brief Returns current format string. */
 std::string GetLogFormatStr() noexcept;
+
+/** @brief Simple implementation to flush log queue when signal has caught. */
+void SimpleSignalHandler(int sig_num);
+
+typedef void (*__sighandler_t)(int);
+
+/** @brief Register all signals using specified signal handler. */
+void RegAllSignals(__sighandler_t signal_handler = SimpleSignalHandler);
+
+/** @brief Register specified signals using corresponding signal handler. */
+void RegSignal(int sig_num,
+               __sighandler_t signal_handler = SimpleSignalHandler);
 
 }  // namespace yeti
 

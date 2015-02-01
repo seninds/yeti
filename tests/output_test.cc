@@ -45,6 +45,8 @@ void TestLog() {
 
 
 int main(int argc, char* argv[]) {
+  yeti::RegAllSignals();
+
   TestLog();
 
   yeti::SetLogColored(true);  // turn on log colorization
