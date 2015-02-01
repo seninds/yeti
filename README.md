@@ -16,7 +16,7 @@ TRACE(msg_fmt, ...);
 ~~~~~~
 
 
-## Usage
+## Usage ##
 
 To use **Yeti** you should:
 * add headers from **"inc/yeti"** to your project;
@@ -61,14 +61,14 @@ Example of setting log level using environment variable *YETI_LOG_LEVEL*:
 YETI_LOG_LEVEL=dbg ./build/test_app
 ~~~~~~
 
-### Set log format ###
+### Set Log Format ###
 
 Logging has printf-style compact format:
 ~~~~~~
 ERROR("[%d] exception: %s", function_id, e.what());
 ~~~~~~
 
-You can tune log format:
+You can tune log format using *yeti::SetLogFormatStr(format_str)* function:
 ~~~~~~
 yeti::SetLogFormatStr("[%(LEVEL)] [%(PID)] %(FILENAME): %(LINE): %(MSG)");
 ~~~~~~
@@ -89,7 +89,36 @@ Keywords to set log format are:
 | %(TIME)     | local time in HH:MM:SS.SSS format (based on the ISO 8601 time format) |
 
 
-### Disable logging ###
+### Handle Signals ###
+
+**Yeti** process runs in separate thread, so then some signals (for example, SIGABRT)
+has been generated **Yeti** could have non-empty message queue.
+If you don't flush **Yeti** message queue you lose these messages.
+
+To flush message queue you can use
+*yeti::RegAllSignals(__sighandler_t = SimpleSignalHandler)* or
+*yeti::RegSignal(sig_num, __sighandler_t = SimpleSignalHandler)* funcions with
+default value for signal handler (this function only flushing message queue).
+You also can set custom signal handler (its signature should be
+*void signal_handler(int)* where you can use *yeti::FlushLog()* function
+to flush message queue by hands.
+
+Example to set signal handlers:
+~~~~~~
+#include <cstdlib>
+#include <yeti/yeti.h>
+
+int main() {
+  yeti::RegAllSignals();
+  // code with logging...
+  std::abort();
+  // code with logging...
+  return 0;
+}
+~~~~~~
+
+
+### Disable Logging ###
 
 If you want to test your application (for example, for profiling) without logging
 you should add *DISABLE_LOGGING* definition before including header *yeti.h*:
@@ -101,7 +130,7 @@ you should add *DISABLE_LOGGING* definition before including header *yeti.h*:
 This instruction sets all logging macros to <i>((void)0)</i>.
 
 
-### List of control functions ###
+### List of Control Functions ###
 
 Logging control is based on *yeti* namespace functions:
 ~~~~~~
@@ -226,12 +255,12 @@ int main(int argc, char* argv[]) {
 [CRITICAL] [12446:3642E50D01F30105] TestLog(): current log level: 0
 ~~~~~~
 
-## LICENCE
+## Licence ##
 
 **Yeti** is distributed with a BSD license
 
 
-## Documentation
+## Documentation ##
 
 Use doxygen to create documentation:
 ~~~~~~
