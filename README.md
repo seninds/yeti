@@ -56,7 +56,7 @@ DEBUG(msg_fmt, ...);
 TRACE(msg_fmt, ...);
 ~~~~~~
 
-Logging control is based on yeti namespace functions:
+Logging control is based on *yeti* namespace functions:
 ~~~~~~
 namespace yeti {
   void SetLogLevel(LogLevel level) noexcept;
@@ -69,6 +69,27 @@ namespace yeti {
   void SetLogFormatStr(const std::string& format_str) noexcept;
   std::string GetLogFormatStr() noexcept;
 }
+~~~~~~
+
+You can also set log level by environment variable *YETI_LOG_LEVEL*.
+All most popular variants of log level naming is taking into account,
+so you shouldn't remember the correct level name.
+
+**Yeti** sets corresponding log level if *YETI_LOG_LEVEL* contains one
+of the following substrings:
+
+| Log Level           | Substrings                      |
+|---------------------|---------------------------------|
+| LOG_LEVEL_TRACE     | "TRACE", "TRC", "trace", "trc"  |
+| LOG_LEVEL_DEBUG     | "DEBUG", "DBG", "debug", "dbg"  |
+| LOG_LEVEL_INFO      | "INF",   "inf"                  |
+| LOG_LEVEL_WARNING   | "WARN",  "WRN", "warn",  "wrn"  |
+| LOG_LEVEL_ERROR     | "ERR",   "err"                  |
+| LOG_LEVEL_CRITICAL  | "CRIT",  "CRT", "crit",  "crt"  |
+
+Example of setting log level using environment variable *YETI_LOG_LEVEL*:
+~~~~~~
+YETI_LOG_LEVEL=dbg ./build/test_app
 ~~~~~~
 
 If you want to test your application (for example, for profiling) without logging
