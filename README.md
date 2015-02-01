@@ -1,10 +1,31 @@
 Yeti: C++ lightweight threadsafe logging
 ========================================
 
-__Yeti__ is lightweight threadsafe logging, which is running in separate thread,
-so it can't slow your application. 
+**Yeti** is C++ lightweight threadsafe logging system,
+which is running in separate thread, so it can't slow your application. 
 
-It has 6 logging levels:
+**Yeti** has a lazy initialization, so if you don't use it you will not have any
+overhead. Just add into your code following macros to log something:
+~~~~~~
+CRITICAL(msg_fmt, ...);
+ERROR(msg_fmt, ...);
+WARN(msg_fmt, ...);
+INFO(msg_fmt, ...);
+DEBUG(msg_fmt, ...);
+TRACE(msg_fmt, ...);
+~~~~~~
+
+
+## Usage
+
+To use **Yeti** you should:
+* add headers from **"inc/yeti"** to your project;
+* add **#include \<yeti/yeti.h\>** into your source files;
+* **build** yeti lib and **link** with it your project.
+
+### Set Log Level ###
+
+**Yeti** has 6 log levels:
 ~~~~~~
 enum LogLevel {
   LOG_LEVEL_CRITICAL,
@@ -15,6 +36,32 @@ enum LogLevel {
   LOG_LEVEL_TRACE
 }
 ~~~~~~
+
+You can change log level at runtime using
+*yeti::SetLogLevel(yeti::LogLevel)* function.
+
+You can also set log level by environment variable *YETI_LOG_LEVEL*.
+All most popular variants of log level naming is taking into account,
+so you shouldn't remember the correct level name.
+
+**Yeti** sets corresponding log level if *YETI_LOG_LEVEL* contains one
+of the following substrings:
+
+| Log Level           | Substrings                      |
+|---------------------|---------------------------------|
+| LOG_LEVEL_TRACE     | "TRACE", "TRC", "trace", "trc"  |
+| LOG_LEVEL_DEBUG     | "DEBUG", "DBG", "debug", "dbg"  |
+| LOG_LEVEL_INFO      | "INF",   "inf"                  |
+| LOG_LEVEL_WARNING   | "WARN",  "WRN", "warn",  "wrn"  |
+| LOG_LEVEL_ERROR     | "ERR",   "err"                  |
+| LOG_LEVEL_CRITICAL  | "CRIT",  "CRT", "crit",  "crt"  |
+
+Example of setting log level using environment variable *YETI_LOG_LEVEL*:
+~~~~~~
+YETI_LOG_LEVEL=dbg ./build/test_app
+~~~~~~
+
+### Set log format ###
 
 Logging has printf-style compact format:
 ~~~~~~
@@ -41,23 +88,20 @@ Keywords to set log format are:
 | %(DATE)     | local date in YYYY-MM-DD format (the ISO 8601 date format)            |
 | %(TIME)     | local time in HH:MM:SS.SSS format (based on the ISO 8601 time format) |
 
-## Usage
 
-To use **Yeti** you should:
-* add content from **"inc/yeti"** to your project;
-* add **#include \<yeti/yeti.h\>** into your source files;
-* **build** yeti lib and **link** with it your project.
+### Disable logging ###
 
-Logging has a lazy initialization, so if you don't use it you will not have any
-overhead. Just add into your code following macros to log something:
+If you want to test your application (for example, for profiling) without logging
+you should add *DISABLE_LOGGING* definition before including header *yeti.h*:
 ~~~~~~
-CRITICAL(msg_fmt, ...);
-ERROR(msg_fmt, ...);
-WARN(msg_fmt, ...);
-INFO(msg_fmt, ...);
-DEBUG(msg_fmt, ...);
-TRACE(msg_fmt, ...);
+#define DISABLE_LOGGING
+// ...
+#include <yeti/yeti.h>
 ~~~~~~
+This instruction sets all logging macros to <i>((void)0)</i>.
+
+
+### List of control functions ###
 
 Logging control is based on *yeti* namespace functions:
 ~~~~~~
@@ -77,44 +121,21 @@ namespace yeti {
 }
 ~~~~~~
 
-You can also set log level by environment variable *YETI_LOG_LEVEL*.
-All most popular variants of log level naming is taking into account,
-so you shouldn't remember the correct level name.
+To get more information about all this functions build documentation using doxygen
+and search their descriptions there.
 
-**Yeti** sets corresponding log level if *YETI_LOG_LEVEL* contains one
-of the following substrings:
 
-| Log Level           | Substrings                      |
-|---------------------|---------------------------------|
-| LOG_LEVEL_TRACE     | "TRACE", "TRC", "trace", "trc"  |
-| LOG_LEVEL_DEBUG     | "DEBUG", "DBG", "debug", "dbg"  |
-| LOG_LEVEL_INFO      | "INF",   "inf"                  |
-| LOG_LEVEL_WARNING   | "WARN",  "WRN", "warn",  "wrn"  |
-| LOG_LEVEL_ERROR     | "ERR",   "err"                  |
-| LOG_LEVEL_CRITICAL  | "CRIT",  "CRT", "crit",  "crt"  |
-
-Example of setting log level using environment variable *YETI_LOG_LEVEL*:
-~~~~~~
-YETI_LOG_LEVEL=dbg ./build/test_app
-~~~~~~
-
-If you want to test your application (for example, for profiling) without logging
-you should add _DISABLE_LOGGING_ definition before including header _yeti.h_:
-~~~~~~
-#define DISABLE_LOGGING
-// ...
-#include <yeti/yeti.h>
-~~~~~~
-This instruction sets all logging macros to <i>((void)0)</i>.
-
-## Requirements
+## Requirements ##
 
 * clang v3.4 or later, gcc v4.8 or later;
 * pthread
 * scons v2.3.3 or later
 
-__Yeti__ uses C++11 and multithreading, so you should add *-std=c++11* and *-pthread* compile and link options.
-__Yeti__ uses SCons as a build system. So to build project and run *output_test* just type in your console:
+**Yeti** uses C++11 and multithreading, so you should add *-std=c++11*
+and *-pthread* compile and link options.
+
+**Yeti** uses SCons as a build system.
+So to build project and run *output_test* just type in your console:
 
 ~~~~~~
 # scons
@@ -123,7 +144,7 @@ __Yeti__ uses SCons as a build system. So to build project and run *output_test*
 
 ## Example
 
-__Example to test Yeti output:__
+**Example to test Yeti output:**
 ~~~~~~
 #include <yeti/yeti.h>
 
@@ -146,6 +167,8 @@ void TestLog(yeti::LogLevel level) {
 
 
 int main(int argc, char* argv[]) {
+  yeti::RegAllSignals();
+
   yeti::SetLogColored(true);  // turn on log colorization
   TestLog(yeti::LOG_LEVEL_TRACE);
   yeti::SetLogFormatStr(
@@ -170,7 +193,7 @@ int main(int argc, char* argv[]) {
 }
 ~~~~~~
 
-__OUTPUT: stderr__
+**OUTPUT: stderr**
 ~~~~~~
 [TRACE] tests/output_test.cc: 33: some trace info
 [DEBUG] tests/output_test.cc: 36: print string: test string
@@ -191,7 +214,7 @@ __OUTPUT: stderr__
 17 [CRITICAL] <3642E50D01F30105> tests/output_test.cc: 44: current log level: 3
 ~~~~~~
 
-__OUTPUT: /tmp/test.log__
+**OUTPUT: /tmp/test.log**
 ~~~~~~
 21 [WARNING] <3642E50D01F30105> tests/output_test.cc: 39: current file descriptor: 3
 22 [ERROR] <3642E50D01F30105> tests/output_test.cc: 42: print array elements: (0, 1, 2)
@@ -205,13 +228,14 @@ __OUTPUT: /tmp/test.log__
 
 ## LICENCE
 
-__Yeti__ is distributed with a BSD license
+**Yeti** is distributed with a BSD license
 
 
 ## Documentation
 
 Use doxygen to create documentation:
 ~~~~~~
-cd <yeti-root>/docs  # where <yeti-root> -- path to yeti project (example: /home/user/workspace/yeti)
+cd <yeti-root>/docs  # where <yeti-root> -- path to yeti project
+                     # (example: /home/user/workspace/yeti)
 doxygen Doxyfile
 ~~~~~~
