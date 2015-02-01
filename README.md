@@ -27,23 +27,26 @@ yeti::SetLogFormatStr("[%(LEVEL)] [%(PID)] %(FILENAME): %(LINE): %(MSG)");
 ~~~~~~
 
 Keywords to set log format are:
-* %(LEVEL)    - logging level
-* %(FILENAME) - filename
-* %(FUNCNAME) - function name
-* %(PID)      - process ID
-* %(TID)      - thread ID
-* %(LINE)     - line number
-* %(MSG)      - user message
-* %(MSG_ID)   - unique message number to refer in discussion with colleagues
-* %(DATE)     - local date in YYYY-MM-DD format (the ISO 8601 date format)
-* %(TIME)     - local time in HH:MM:SS.SSS format (based on the ISO 8601 time format)
+
+| Keyword     | Description                                                           |
+|-------------|-----------------------------------------------------------------------|
+| %(LEVEL)    | logging level                                                         |
+| %(FILENAME) | filename                                                              |
+| %(FUNCNAME) | function name                                                         |
+| %(PID)      | process ID                                                            |
+| %(TID)      | thread ID                                                             |
+| %(LINE)     | line number                                                           |
+| %(MSG)      | user message                                                          |
+| %(MSG_ID)   | unique message number to refer in discussion with colleagues          |
+| %(DATE)     | local date in YYYY-MM-DD format (the ISO 8601 date format)            |
+| %(TIME)     | local time in HH:MM:SS.SSS format (based on the ISO 8601 time format) |
 
 ## Usage
 
-To use __Yeti__ you should:
-* add content from _"inc/yeti"_ to your project;
-* add __#include <yeti/yeti.h>__ into your source files;
-* build __yeti__ lib and link with it your project.
+To use **Yeti** you should:
+* add content from **"inc/yeti"** to your project;
+* add **#include \<yeti/yeti.h\>** into your source files;
+* **build** yeti lib and **link** with it your project.
 
 Logging has a lazy initialization, so if you don't use it you will not have any
 overhead. Just add into your code following macros to log something:
