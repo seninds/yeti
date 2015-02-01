@@ -108,6 +108,10 @@ void RegSignal(int sig_num, __sighandler_t signal_handler) {
   signal(sig_num, signal_handler);
 }
 
+void FlushLog() {
+  yeti::Logger::instance().Flush();
+}
+
 std::size_t _GetMsgId() {
   return yeti::Logger::instance().GetMsgId();
 }

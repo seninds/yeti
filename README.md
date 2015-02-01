@@ -71,6 +71,9 @@ namespace yeti {
   void CloseLogFileDesc(FILE* fd = nullptr);
   void SetLogFormatStr(const std::string& format_str) noexcept;
   std::string GetLogFormatStr() noexcept;
+  void FlushLog();
+  void RegAllSignals(__sighandler_t signal_handler = SimpleSignalHandler);
+  void RegSignal(int sig_num, __sighandler_t signal_handler = SimpleSignalHandler);
 }
 ~~~~~~
 

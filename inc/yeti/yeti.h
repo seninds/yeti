@@ -130,6 +130,9 @@ void RegAllSignals(__sighandler_t signal_handler = SimpleSignalHandler);
 void RegSignal(int sig_num,
                __sighandler_t signal_handler = SimpleSignalHandler);
 
+/** @brief Flush log queue (blocking call). */
+void FlushLog();
+
 }  // namespace yeti
 
 #include <yeti/macro.h>
