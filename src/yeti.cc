@@ -49,6 +49,18 @@ const std::map<int, std::string> SIGNAME = {
     { SIGTERM, "SIGTERM" }
 };
 
+typedef void (*__sighandler_t)(int);
+
+std::map<int, __sighandler_t> g_old_handlers = {
+    { SIGABRT, nullptr },
+    { SIGFPE, nullptr },
+    { SIGILL, nullptr },
+    { SIGINT, nullptr },
+    { SIGSEGV, nullptr },
+    { SIGTERM, nullptr }
+};
+
+
 void SetLogLevel(LogLevel level) noexcept {
   Logger::instance().SetLevel(level);
 }
@@ -92,20 +104,19 @@ void ShutdownLog() {
 void SimpleSignalHandler(int sig_num) {
   CRITICAL("caught %s: start flushing log...\n", SIGNAME.at(sig_num).c_str());
   yeti::Logger::instance().Flush();
+  if (g_old_handlers[sig_num]) g_old_handlers[sig_num](sig_num);
 }
 
-void RegAllSignals(__sighandler_t signal_handler) {
+void RegSignal(int sig_num) {
   // logger should be instantiated before signals will be registered
-  yeti::Logger::instance();
+  auto old_handler = signal(sig_num, SimpleSignalHandler);
+  if (old_handler) g_old_handlers[sig_num] = old_handler;
+}
+
+void RegAllSignals() {
   for (const auto& entry : SIGNAME) {
-    signal(entry.first, signal_handler);
+    RegSignal(entry.first);
   }
-}
-
-void RegSignal(int sig_num, __sighandler_t signal_handler) {
-  // logger should be instantiated before signals will be registered
-  yeti::Logger::instance();
-  signal(sig_num, signal_handler);
 }
 
 void FlushLog() {

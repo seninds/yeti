@@ -35,6 +35,8 @@
 
 namespace yeti {
 
+void RegAllSignals();
+
 Logger::Logger()
     : stop_loop_(false),
       is_colored_(true),
@@ -93,6 +95,7 @@ Logger& Logger::instance() {
   if (!is_registered) {
     std::lock_guard<std::mutex> lock(mutex);
     if (!is_registered) {
+      RegAllSignals();
       std::atexit([]() { yeti::Logger::instance().Shutdown(); });
       is_registered = true;
     }

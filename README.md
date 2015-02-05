@@ -89,42 +89,6 @@ Keywords to set log format are:
 | %(TIME)     | local time in HH:MM:SS.SSS format (based on the ISO 8601 time format) |
 
 
-### Handle Signals ###
-
-**Yeti** process runs in separate thread, so, when some signals (for example, SIGABRT)
-has been generated, **Yeti** could have non-empty message queue.
-If you don't flush **Yeti** message queue, you will lose these messages.
-
-To flush message queue you can use functions:
-~~~~~~
-namespace yeti {
-void RegAllSignals(__sighandler_t signal_handler = SimpleSignalHandler);
-void RegSignal(int, __sighandler_t signal_handler = SimpleSignalHandler);
-}
-~~~~~~
-with default value for signal handler (this function only flushing message queue).
-
-You also can set custom signal handler. Its signature should be:
-~~~~~~
-typedef void (*__sighandler_t)(int);
-~~~~~~
-where you can use *yeti::FlushLog()* function to flush message queue by yourself.
-
-Example to set signal handlers:
-~~~~~~
-#include <cstdlib>
-#include <yeti/yeti.h>
-
-int main() {
-  yeti::RegAllSignals();
-  // code with logging...
-  std::abort();
-  // code with logging...
-  return 0;
-}
-~~~~~~
-
-
 ### Disable Logging ###
 
 If you want to test your application (for example, for profiling) without logging
@@ -152,8 +116,6 @@ namespace yeti {
   void SetLogFormatStr(const std::string& format_str) noexcept;
   std::string GetLogFormatStr() noexcept;
   void FlushLog();
-  void RegAllSignals(__sighandler_t signal_handler = SimpleSignalHandler);
-  void RegSignal(int sig_num, __sighandler_t signal_handler = SimpleSignalHandler);
 }
 ~~~~~~
 
@@ -174,6 +136,7 @@ and *-pthread* compile and link options.
 So to build project and run *output_test* just type in your console:
 
 ~~~~~~
+# cd yeti  # root of yeti project
 # scons
 # LD_LIBRARY_PATH="./build" ./build/tests/output_test
 ~~~~~~
@@ -185,8 +148,7 @@ So to build project and run *output_test* just type in your console:
 #include <yeti/yeti.h>
 
 
-void TestLog(yeti::LogLevel level) {
-  yeti::SetLogLevel(level);
+void TestLog() {
   TRACE("some trace info");
 
   std::string debug_str = "test string";
@@ -203,26 +165,33 @@ void TestLog(yeti::LogLevel level) {
 
 
 int main(int argc, char* argv[]) {
-  yeti::RegAllSignals();
+  TestLog();
 
   yeti::SetLogColored(true);  // turn on log colorization
-  TestLog(yeti::LOG_LEVEL_TRACE);
+  yeti::SetLogLevel(yeti::LOG_LEVEL_TRACE);
+  TestLog();
+
   yeti::SetLogFormatStr(
       "[%(LEVEL)] <%(DATE) %(TIME)> %(FILENAME): %(LINE): %(MSG)");
-  TestLog(yeti::LOG_LEVEL_DEBUG);
+  yeti::SetLogLevel(yeti::LOG_LEVEL_DEBUG);
+  TestLog();
 
   yeti::SetLogColored(false);  // turn off log colorization
   yeti::SetLogFormatStr(
       "%(MSG_ID) [%(LEVEL)] <%(TID)> %(FILENAME): %(LINE): %(MSG)");
-  TestLog(yeti::LOG_LEVEL_INFO);
+  yeti::SetLogLevel(yeti::LOG_LEVEL_INFO);
+  TestLog();
 
   FILE* fd = std::fopen("/tmp/test.log", "w");
   yeti::SetLogFileDesc(fd);  // start logging into specified file
-  TestLog(yeti::LOG_LEVEL_WARNING);
+  yeti::SetLogLevel(yeti::LOG_LEVEL_WARNING);
+  TestLog();
   yeti::SetLogFormatStr("[%(LEVEL)] [%(PID):%(TID)] %(FUNCNAME)(): %(MSG)");
-  TestLog(yeti::LOG_LEVEL_ERROR);
+  yeti::SetLogLevel(yeti::LOG_LEVEL_ERROR);
+  TestLog();
   yeti::SetLogColored(true);
-  TestLog(yeti::LOG_LEVEL_CRITICAL);
+  yeti::SetLogLevel(yeti::LOG_LEVEL_CRITICAL);
+  TestLog();
   yeti::CloseLogFileDesc();  // enqueue closing file descriptor
 
   return 0;
