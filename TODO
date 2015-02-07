@@ -1,7 +1,4 @@
 TODO list:
+* add more convenient names to macros
 * create LogData obj using shared_ptr
-* create macro version without new line at the end
-	- separate <LEVEL>_BODY, <LEVEL> and <LEVEL>N macro
-	- add new field to LogData struct to mark if current ver. is without new line
-	- add new line during log string creation
 * margins for all tags in logger format string
