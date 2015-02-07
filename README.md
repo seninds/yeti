@@ -5,15 +5,28 @@ Yeti: C++ lightweight threadsafe logging
 which is running in separate thread, so it can't slow your application. 
 
 **Yeti** has a lazy initialization, so if you don't use it you will not have any
-overhead. Just add into your code following macros to log something:
+overhead. Just add into your code following macros to log something using
+printf-style syntax:
 ~~~~~~
-CRITICAL(msg_fmt, ...);
-ERROR(msg_fmt, ...);
-WARN(msg_fmt, ...);
-INFO(msg_fmt, ...);
-DEBUG(msg_fmt, ...);
-TRACE(msg_fmt, ...);
+CRT(msg_fmt, ...);
+ERR(msg_fmt, ...);
+WRN(msg_fmt, ...);
+INF(msg_fmt, ...);
+DBG(msg_fmt, ...);
+TRC(msg_fmt, ...);
 ~~~~~~
+
+**Yeti** knows synonymous to these macros, so you can choose notation
+which you like:
+
+| Log Level           | Macros                          |
+|---------------------|---------------------------------|
+| LOG_LEVEL_TRACE     | TRACE, TRC                      |
+| LOG_LEVEL_DEBUG     | DEBUG, DBG                      |
+| LOG_LEVEL_INFO      | INFO, INF                       |
+| LOG_LEVEL_WARNING   | WARNING, WARN, WRN              |
+| LOG_LEVEL_ERROR     | ERROR, ERR                      |
+| LOG_LEVEL_CRITICAL  | CRITICAL, CRIT, CRT             |
 
 
 ## Usage ##
@@ -23,10 +36,23 @@ To use **Yeti** you should:
 * add **#include \<yeti/yeti.h\>** into your source files;
 * **build** yeti lib and **link** with it your project.
 
+
+## Build ##
+To build the project and run tests just type in your console:
+~~~~~~
+$ cd <yeti-root>           # where <yeti-root> - path to the root of yeti project
+$ mkdir build && cd build  # create separate build tree
+$ cmake .. && make         # build project using CMake
+$ make test                # run tests
+~~~~~~
+
+
 ### Set Log Level ###
 
 **Yeti** has 6 log levels:
 ~~~~~~
+namespace yeti {
+
 enum LogLevel {
   LOG_LEVEL_CRITICAL,
   LOG_LEVEL_ERROR,
@@ -35,16 +61,18 @@ enum LogLevel {
   LOG_LEVEL_DEBUG,
   LOG_LEVEL_TRACE
 }
+
+}  // namespace yeti
 ~~~~~~
 
 You can change log level at runtime using
 *yeti::SetLogLevel(yeti::LogLevel)* function.
 
-You can also set log level by environment variable *YETI_LOG_LEVEL*.
+You can also set log level using environment variable *YETI_LOG_LEVEL*.
 All most popular variants of log level naming is taking into account,
 so you shouldn't remember the correct level name.
 
-**Yeti** sets corresponding log level if *YETI_LOG_LEVEL* contains one
+**Yeti** will set corresponding log level if *YETI_LOG_LEVEL* contains one
 of the following substrings:
 
 | Log Level           | Substrings                      |
@@ -58,7 +86,8 @@ of the following substrings:
 
 Example of setting log level using environment variable *YETI_LOG_LEVEL*:
 ~~~~~~
-YETI_LOG_LEVEL=dbg ./build/test_app
+$ YETI_LOG_LEVEL=dbg ./build/test_app
+$ YETI_LOG_LEVEL=inf ./build/test_app
 ~~~~~~
 
 ### Set Log Format ###
@@ -95,8 +124,8 @@ If you want to test your application (for example, for profiling) without loggin
 you should add *YETI_DISABLE_LOGGING* definition before including header *yeti.h*:
 ~~~~~~
 #define YETI_DISABLE_LOGGING
-// ...
 #include <yeti/yeti.h>
+// other headers...
 ~~~~~~
 This instruction sets all logging macros to <i>((void)0)</i>.
 
@@ -116,7 +145,7 @@ namespace yeti {
   void SetLogFormatStr(const std::string& format_str) noexcept;
   std::string GetLogFormatStr() noexcept;
   void FlushLog();
-}
+}  // namespace yeti
 ~~~~~~
 
 To get more information about all this functions build documentation using doxygen
@@ -133,14 +162,6 @@ and search their descriptions there.
 and *-pthread* compile and link options.
 
 **Yeti** uses CMake as a build system.
-So to build project and run tests just type in your console:
-
-~~~~~~
-$ cd <yeti-root>           # where <yeti-root> - path to the root of yeti project
-$ mkdir build && cd build  # create separate build tree
-$ cmake .. && make         # build project using CMake
-$ make test                # run tests
-~~~~~~
 
 ## Example ##
 

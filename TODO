@@ -1,4 +1,3 @@
 TODO list:
-* add more convenient names to macros
 * create LogData obj using shared_ptr
 * margins for all tags in logger format string

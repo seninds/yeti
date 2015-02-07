@@ -50,11 +50,11 @@ void ShowTestMsg() {
   CRITICAL("Selected log level: %d (%s)", yeti::GetLogLevel(),
            level_names.at(yeti::GetLogLevel()).c_str());
 
-  CRITICAL("test critical msg");
-  ERROR("test error msg");
+  CRT("test critical msg");
+  ERR("test error msg");
   WARN("test warning msg");
-  INFO("test info msg");
-  DEBUG("test debug msg");
+  INF("test info msg");
+  DBG("test debug msg");
   TRACE("test trace msg");
 }
 

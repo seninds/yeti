@@ -101,6 +101,17 @@ void _IncMsgId();
 
 // @endcond
 
+
+#define CRIT CRITICAL
+#define CRT CRITICAL
+#define ERR ERROR
+#define WRN WARN
+#define WARNING WARN
+#define INF INFO
+#define DBG DEBUG
+#define TRC TRACE
+
+
 #ifdef YETI_DISABLE_LOGGING
 
 #define CRITICAL(fmt, ...) ((void) 0)
