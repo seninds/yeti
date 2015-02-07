@@ -127,21 +127,22 @@ and search their descriptions there.
 
 * clang v3.4 or later, gcc v4.8 or later;
 * pthread
-* scons v2.3.3 or later
+* cmake v2.8 or later
 
 **Yeti** uses C++11 and multithreading, so you should add *-std=c++11*
 and *-pthread* compile and link options.
 
-**Yeti** uses SCons as a build system.
-So to build project and run *output_test* just type in your console:
+**Yeti** uses CMake as a build system.
+So to build project and run tests just type in your console:
 
 ~~~~~~
-# cd yeti  # root of yeti project
-# scons
-# LD_LIBRARY_PATH="./build" ./build/tests/output_test
+$ cd <yeti-root>           # where <yeti-root> - path to the root of yeti project
+$ mkdir build && cd build  # create separate build tree
+$ cmake .. && make         # build project using CMake
+$ make test                # run tests
 ~~~~~~
 
-## Example
+## Example ##
 
 **Example to test Yeti output:**
 ~~~~~~
@@ -240,7 +241,7 @@ int main(int argc, char* argv[]) {
 
 Use doxygen to create documentation:
 ~~~~~~
-cd <yeti-root>/docs  # where <yeti-root> -- path to yeti project
-                     # (example: /home/user/workspace/yeti)
-doxygen Doxyfile
+$ cd <yeti-root>/docs  # where <yeti-root> -- path to the root of yeti project
+                       # (example: /home/user/workspace/yeti)
+$ doxygen Doxyfile
 ~~~~~~

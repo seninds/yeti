@@ -6,12 +6,7 @@ if(MINGW OR UNIX)
     add_definitions(-pthread -std=gnu++11)
 endif()
 
-if(MSVC)
-    # d.polubotko (FIXME):
-    #add_definitions(-std=c++11)
-endif()
-
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/libs)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
 
 file(GLOB_RECURSE sources_yeti src/*.cc)
@@ -23,13 +18,9 @@ list(APPEND sources ${sources_yeti_h})
 include_directories (inc)
 include_directories (.)
 
-if(MSVC)
-    source_group("Source Files\\yeti" FILES ${sources_yeti})
-    source_group("Header Files\\yeti" FILES ${sources_yeti_h})
-endif()
-
 add_library(yeti STATIC ${sources})
 
+enable_testing()
 add_subdirectory (tests)
 
 

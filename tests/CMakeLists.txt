@@ -6,30 +6,20 @@ if(MINGW OR UNIX)
     add_definitions(-pthread -std=gnu++11)
 endif()
 
-if(MSVC)
-    # d.polubotko (FIXME):
-    #add_definitions(-std=c++11)
-endif()
-
-set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR})
-
-file(GLOB_RECURSE sources_yeti_test ./*.cc)
-
-list(APPEND sources ${sources_yeti_test})
-
-include_directories (../inc) 
-
-if(MSVC)
-    source_group("Source Files\\yeti_test" FILES ${sources_yeti_test})
-endif()
-
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/libs)
+set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/tests)
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread -std=gnu++11 -Wl,--no-as-needed")
 
-add_executable( yeti_test ${sources})
+include_directories (../inc)
 
-target_link_libraries(yeti_test yeti pthread)
+###############################################################################
+# GTest
+ADD_SUBDIRECTORY (gtest)
+include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR}) 
 
 
-
-
+###############################################################################
+# YETI_LOG_LEVEL Test
+add_executable(yeti_log_level yeti_log_level.cc)
+target_link_libraries(yeti_log_level yeti gtest_main pthread)
+add_test(yeti_log_level ${CMAKE_BINARY_DIR}/tests/yeti_log_level)
