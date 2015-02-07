@@ -102,33 +102,33 @@ void _IncMsgId();
 // @endcond
 
 
-#define CRIT CRITICAL
-#define CRT CRITICAL
-#define ERR ERROR
-#define WRN WARN
-#define WARNING WARN
-#define INF INFO
-#define DBG DEBUG
-#define TRC TRACE
+#define CRITICAL CRT
+#define CRIT     CRT
+#define ERROR    ERR
+#define WARN     WRN
+#define WARNING  WRN
+#define INFO     INF
+#define DEBUG    DBG
+#define TRACE    TRC
 
 
 #ifdef YETI_DISABLE_LOGGING
 
-#define CRITICAL(fmt, ...) ((void) 0)
-#define ERROR(fmt, ...) ((void) 0)
-#define WARN(fmt, ...) ((void) 0)
-#define INFO(fmt, ...) ((void) 0)
-#define DEBUG(fmt, ...) ((void) 0)
-#define TRACE(fmt, ...) ((void) 0)
+#define CRT(fmt, ...) ((void) 0)
+#define ERR(fmt, ...) ((void) 0)
+#define WRN(fmt, ...) ((void) 0)
+#define INF(fmt, ...) ((void) 0)
+#define DBG(fmt, ...) ((void) 0)
+#define TRC(fmt, ...) ((void) 0)
 
 #else  // YETI_DISABLE_LOGGING
 
 /**
  * @brief Logs critical error message using specified printf-like format.
  */
-#define CRITICAL(fmt, ...) { \
+#define CRT(fmt, ...) { \
   yeti::LogData __yeti_data__; \
-  __yeti_data__.level = "CRITICAL"; \
+  __yeti_data__.level = "CRT"; \
   __yeti_data__.color = YETI_LRED; \
   __yeti_data__.filename = __FILE__; \
   __yeti_data__.funcname = __func__; \
@@ -146,12 +146,12 @@ void _IncMsgId();
 /**
  * @brief Logs error message using specified printf-like format.
  */
-#define ERROR(fmt, ...) { \
+#define ERR(fmt, ...) { \
   std::size_t __yeti_msg_id__ = yeti::_GetMsgId(); \
   yeti::_IncMsgId(); \
   if (yeti::GetLogLevel() >= yeti::LOG_LEVEL_ERROR) { \
     yeti::LogData __yeti_data__; \
-    __yeti_data__.level = "ERROR"; \
+    __yeti_data__.level = "ERR"; \
     __yeti_data__.color = YETI_LPURPLE; \
     __yeti_data__.filename = __FILE__; \
     __yeti_data__.funcname = __func__; \
@@ -169,12 +169,12 @@ void _IncMsgId();
 /**
  * @brief Logs warning message using specified printf-like format.
  */
-#define WARN(fmt, ...) { \
+#define WRN(fmt, ...) { \
   std::size_t __yeti_msg_id__ = yeti::_GetMsgId(); \
   yeti::_IncMsgId(); \
   if (yeti::GetLogLevel() >= yeti::LOG_LEVEL_WARNING) { \
     yeti::LogData __yeti_data__; \
-    __yeti_data__.level = "WARNING"; \
+    __yeti_data__.level = "WRN"; \
     __yeti_data__.color = YETI_YELLOW; \
     __yeti_data__.filename = __FILE__; \
     __yeti_data__.funcname = __func__; \
@@ -192,12 +192,12 @@ void _IncMsgId();
 /**
  * @brief Logs informational message using specified printf-like format.
  */
-#define INFO(fmt, ...) { \
+#define INF(fmt, ...) { \
   std::size_t __yeti_msg_id__ = yeti::_GetMsgId(); \
   yeti::_IncMsgId(); \
   if (yeti::GetLogLevel() >= yeti::LOG_LEVEL_INFO) { \
     yeti::LogData __yeti_data__; \
-    __yeti_data__.level = "INFO"; \
+    __yeti_data__.level = "INF"; \
     __yeti_data__.color = YETI_LGREEN; \
     __yeti_data__.filename = __FILE__; \
     __yeti_data__.funcname = __func__; \
@@ -215,12 +215,12 @@ void _IncMsgId();
 /**
  * @brief Logs debug message using specified printf-like format.
  */
-#define DEBUG(fmt, ...) { \
+#define DBG(fmt, ...) { \
   std::size_t __yeti_msg_id__ = yeti::_GetMsgId(); \
   yeti::_IncMsgId(); \
   if (yeti::GetLogLevel() >= yeti::LOG_LEVEL_DEBUG) { \
     yeti::LogData __yeti_data__; \
-    __yeti_data__.level = "DEBUG"; \
+    __yeti_data__.level = "DBG"; \
     __yeti_data__.color = YETI_WHITE; \
     __yeti_data__.filename = __FILE__; \
     __yeti_data__.funcname = __func__; \
@@ -238,12 +238,12 @@ void _IncMsgId();
 /**
  * @brief Logs trace message using specified printf-like format.
  */
-#define TRACE(fmt, ...) { \
+#define TRC(fmt, ...) { \
   std::size_t __yeti_msg_id__ = yeti::_GetMsgId(); \
   yeti::_IncMsgId(); \
   if (yeti::GetLogLevel() >= yeti::LOG_LEVEL_TRACE) { \
     yeti::LogData __yeti_data__; \
-    __yeti_data__.level = "TRACE"; \
+    __yeti_data__.level = "TRC"; \
     __yeti_data__.color = ""; \
     __yeti_data__.filename = __FILE__; \
     __yeti_data__.funcname = __func__; \
