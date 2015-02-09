@@ -102,14 +102,14 @@ void _IncMsgId();
 // @endcond
 
 
-#define CRITICAL CRT
-#define CRIT     CRT
-#define ERROR    ERR
-#define WARN     WRN
-#define WARNING  WRN
-#define INFO     INF
-#define DEBUG    DBG
-#define TRACE    TRC
+#define CRITICAL(fmt, ...) CRT(fmt, ##__VA_ARGS__)
+#define CRIT(fmt, ...)     CRT(fmt, ##__VA_ARGS__)
+#define ERROR(fmt, ...)    ERR(fmt, ##__VA_ARGS__)
+#define WARN(fmt, ...)     WRN(fmt, ##__VA_ARGS__)
+#define WARNING(fmt, ...)  WRN(fmt, ##__VA_ARGS__)
+#define INFO(fmt, ...)     INF(fmt, ##__VA_ARGS__)
+#define DEBUG(fmt, ...)    DBG(fmt, ##__VA_ARGS__)
+#define TRACE(fmt, ...)    TRC(fmt, ##__VA_ARGS__)
 
 
 #ifdef YETI_DISABLE_LOGGING

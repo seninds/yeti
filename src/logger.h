@@ -34,6 +34,7 @@
 #include <functional>
 #include <mutex>
 #include <queue>
+#include <list>
 #include <string>
 #include <thread>
 #include <yeti/yeti.h>
@@ -93,11 +94,11 @@ class Logger {
   /** @brief Flush log queue (blocking call). */
   void Flush();
 
-  /** @brief Return log queue length. */
-  std::size_t QueueLen();
-
   /** @brief Return is log queue is empty. */
   bool IsQueueEmpty();
+
+  /** @brief Return is execution list is empty. */
+    bool IsExecListEmpty();
 
  private:
   Logger();
@@ -107,6 +108,7 @@ class Logger {
   mutable std::mutex settings_mutex_;
   std::condition_variable cv_;
   std::queue<std::function<void()>> queue_;
+  std::list<std::function<void()>> exec_list_;
   std::atomic<bool> stop_loop_;
   std::atomic<bool> is_colored_;
   std::atomic<int> level_;

@@ -26,7 +26,6 @@
 // URL: https://github.com/seninds/yeti.git
 
 #include <cstdlib>
-#include <list>
 #include <algorithm>
 #include <map>
 #include <functional>
@@ -137,16 +136,16 @@ void Logger::ProcessingLoop() {
 
     // build execution list
     std::lock_guard<std::mutex> exec_lock(exec_list_mutex_);
-    std::list<std::function<void()>> exec_list;
     while (!queue_.empty()) {
-      exec_list.push_back(queue_.front());
+      exec_list_.push_back(queue_.front());
       queue_.pop();
     }
     queue_lock.unlock();
 
     // execute all elements from execution list
-    for (const auto& functor : exec_list) {
-      functor();
+    while (!exec_list_.empty()) {
+      exec_list_.front()();
+      exec_list_.pop_front();
     }
   } while (!stop_loop_ || !IsQueueEmpty());
 }
@@ -164,8 +163,7 @@ std::string Logger::GetFormatStr() const noexcept {
 void Logger::Flush() {
   do {
     cv_.notify_one();
-    std::lock_guard<std::mutex> exec_list_lock(exec_list_mutex_);
-  } while (!IsQueueEmpty());
+  } while (!IsQueueEmpty() || !IsExecListEmpty());
 }
 
 bool Logger::IsQueueEmpty() {
@@ -173,9 +171,9 @@ bool Logger::IsQueueEmpty() {
   return queue_.empty();
 }
 
-std::size_t Logger::QueueLen() {
-  std::lock_guard<std::mutex> lock(queue_mutex_);
-  return queue_.size();
+bool Logger::IsExecListEmpty() {
+  std::lock_guard<std::mutex> lock(exec_list_mutex_);
+  return exec_list_.empty();
 }
 
 }  // namespace yeti
