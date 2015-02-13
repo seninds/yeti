@@ -102,7 +102,7 @@ void ShutdownLog() {
 }
 
 void SimpleSignalHandler(int sig_num) {
-  CRITICAL("caught %s: start flushing log...\n", SIGNAME.at(sig_num).c_str());
+  DEBUG("caught %s: start flushing log...\n", SIGNAME.at(sig_num).c_str());
   yeti::Logger::instance().Flush();
   if (g_old_handlers[sig_num]) g_old_handlers[sig_num](sig_num);
 }
