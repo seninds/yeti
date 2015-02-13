@@ -102,16 +102,6 @@ void _IncMsgId();
 // @endcond
 
 
-#define CRITICAL(fmt, ...) CRT(fmt, ##__VA_ARGS__)
-#define CRIT(fmt, ...)     CRT(fmt, ##__VA_ARGS__)
-#define ERROR(fmt, ...)    ERR(fmt, ##__VA_ARGS__)
-#define WARN(fmt, ...)     WRN(fmt, ##__VA_ARGS__)
-#define WARNING(fmt, ...)  WRN(fmt, ##__VA_ARGS__)
-#define INFO(fmt, ...)     INF(fmt, ##__VA_ARGS__)
-#define DEBUG(fmt, ...)    DBG(fmt, ##__VA_ARGS__)
-#define TRACE(fmt, ...)    TRC(fmt, ##__VA_ARGS__)
-
-
 #ifdef YETI_DISABLE_LOGGING
 
 #define CRT(fmt, ...) ((void) 0)
@@ -259,5 +249,14 @@ void _IncMsgId();
 }
 
 #endif  // YETI_DISABLE_LOGGING
+
+#define CRITICAL(fmt, ...) CRT(fmt, ##__VA_ARGS__)
+#define CRIT(fmt, ...)     CRT(fmt, ##__VA_ARGS__)
+#define ERROR(fmt, ...)    ERR(fmt, ##__VA_ARGS__)
+#define WARN(fmt, ...)     WRN(fmt, ##__VA_ARGS__)
+#define WARNING(fmt, ...)  WRN(fmt, ##__VA_ARGS__)
+#define INFO(fmt, ...)     INF(fmt, ##__VA_ARGS__)
+#define DEBUG(fmt, ...)    DBG(fmt, ##__VA_ARGS__)
+#define TRACE(fmt, ...)    TRC(fmt, ##__VA_ARGS__)
 
 #endif  // INC_YETI_MACRO_H_
