@@ -27,6 +27,7 @@
 
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <ctime>
 
 #include <algorithm>
@@ -76,23 +77,13 @@ TEST(YETI, YETI_LOG_LEVEL) {
 
   std::srand(std::time(0));
   LogLevel selected_level = env_vars[std::rand() % env_vars.size()];
-  #ifndef _WIN32
-  setenv("YETI_LOG_LEVEL", selected_level.name.c_str(), 1);
-  #else
-  //http://mingw.5.n7.nabble.com/Building-GNU-Global-setenv-is-missing-td7511.html
-  std::string tmp_var = "YETI_LOG_LEVEL=";
-  tmp_var += std::string(selected_level.name.c_str());
-  putenv(tmp_var.c_str());
-  #endif
+  char log_level_str[128] = "YETI_LOG_LEVEL=";
+  std::strncat(log_level_str, selected_level.name.c_str(), selected_level.name.length());
+  putenv(log_level_str);
   EXPECT_EQ(selected_level.id, yeti::GetLogLevel());
 
   char buffer[4096] = { 0 };
-  #ifndef _WIN32
-  setbuffer(stderr, buffer, sizeof(buffer));
-  #else
-  //http://www.cplusplus.com/reference/cstdio/setvbuf/
   setvbuf(stderr, buffer, _IOFBF, sizeof(buffer));
-  #endif
   ShowTestMsg();
   yeti::FlushLog();
   EXPECT_EQ(selected_level.id + 2,
