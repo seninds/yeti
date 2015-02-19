@@ -87,17 +87,10 @@ LogLevel Logger::LogLevelFromEnv(const char* var) {
 Logger& Logger::instance() {
   static Logger logger;
 
-  // register Logger::Shutdown() to flush log at exit
-  // (logger instance should have been already created at this moment)
-  static bool is_registered = false;
-  static std::mutex mutex;
-  if (!is_registered) {
-    std::lock_guard<std::mutex> lock(mutex);
-    if (!is_registered) {
-      RegAllSignals();
-      std::atexit([]() { yeti::Logger::instance().Shutdown(); });
-      is_registered = true;
-    }
+  static std::atomic<bool> is_registered(false);
+  if (!is_registered.exchange(true)) {
+    RegAllSignals();
+    std::atexit([]() { yeti::Logger::instance().Shutdown(); });
   }
 
   return logger;
