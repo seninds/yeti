@@ -131,38 +131,38 @@ void _IncMsgId() {
   yeti::Logger::instance().IncMsgId();
 }
 
-std::string _CreateLogStr(const yeti::LogData& log_data) {
+std::string _CreateLogStr(std::shared_ptr<const yeti::LogData> log_data) {
   std::map<std::string, std::string> subs;
-  subs["%(LEVEL)"] = log_data.level;
-  subs["%(FILENAME)"] = log_data.filename;
-  subs["%(FUNCNAME)"] = log_data.funcname;
-  subs["%(MSG)"] = log_data.msg;
+  subs["%(LEVEL)"] = log_data->level;
+  subs["%(FILENAME)"] = log_data->filename;
+  subs["%(FUNCNAME)"] = log_data->funcname;
+  subs["%(MSG)"] = log_data->msg;
 
-  if (log_data.log_format.find("%(PID)") != std::string::npos) {
-    subs["%(PID)"] = std::to_string(log_data.pid);
+  if (log_data->log_format.find("%(PID)") != std::string::npos) {
+    subs["%(PID)"] = std::to_string(log_data->pid);
   }
 
-  if (log_data.log_format.find("%(TID)") != std::string::npos) {
+  if (log_data->log_format.find("%(TID)") != std::string::npos) {
     std::hash<std::thread::id> hash_fn;
     std::ostringstream oss;
-    oss << std::hex << std::uppercase << hash_fn(log_data.tid);
+    oss << std::hex << std::uppercase << hash_fn(log_data->tid);
     subs["%(TID)"] = oss.str();
   }
 
-  if (log_data.log_format.find("%(DATE)") != std::string::npos) {
+  if (log_data->log_format.find("%(DATE)") != std::string::npos) {
     using namespace std::chrono;
     char date_buf[16] = { 0 };
-    auto sec = duration_cast<seconds>(log_data.time.time_since_epoch());
+    auto sec = duration_cast<seconds>(log_data->time.time_since_epoch());
     std::time_t t = sec.count();
     std::strftime(date_buf, sizeof(date_buf), "%F", std::localtime(&t));
     subs["%(DATE)"] = date_buf;
   }
 
-  if (log_data.log_format.find("%(TIME)") != std::string::npos) {
+  if (log_data->log_format.find("%(TIME)") != std::string::npos) {
     using namespace std::chrono;
     char time_buf[32] = { 0 };
-    auto nanos = duration_cast<nanoseconds>(log_data.time.time_since_epoch());
-    auto sec = duration_cast<seconds>(log_data.time.time_since_epoch());
+    auto nanos = duration_cast<nanoseconds>(log_data->time.time_since_epoch());
+    auto sec = duration_cast<seconds>(log_data->time.time_since_epoch());
     std::time_t t = sec.count();
     std::size_t frac = nanos.count() % 1000000000;
     std::strftime(time_buf, sizeof(time_buf), "%T", std::localtime(&t));
@@ -170,15 +170,15 @@ std::string _CreateLogStr(const yeti::LogData& log_data) {
     subs["%(TIME)"] = time_str;
   }
 
-  if (log_data.log_format.find("%(LINE)") != std::string::npos) {
-    subs["%(LINE)"] = std::to_string(log_data.line);
+  if (log_data->log_format.find("%(LINE)") != std::string::npos) {
+    subs["%(LINE)"] = std::to_string(log_data->line);
   }
 
-  if (log_data.log_format.find("%(MSG_ID)") != std::string::npos) {
-    subs["%(MSG_ID)"] = std::to_string(log_data.msg_id);
+  if (log_data->log_format.find("%(MSG_ID)") != std::string::npos) {
+    subs["%(MSG_ID)"] = std::to_string(log_data->msg_id);
   }
 
-  std::string result = log_data.log_format;
+  std::string result = log_data->log_format;
   size_t pos = 0;
   for (const auto& entry : subs) {
     while ((pos = result.find(entry.first)) != std::string::npos) {
@@ -188,7 +188,7 @@ std::string _CreateLogStr(const yeti::LogData& log_data) {
   return result;
 }
 
-void _EnqueueLogTask(LogData* log_data) {
+void _EnqueueLogTask(std::shared_ptr<LogData> log_data) {
   log_data->log_format = yeti::Logger::instance().GetFormatStr();
   log_data->time = std::chrono::high_resolution_clock::now();
   log_data->pid = getpid();
@@ -196,20 +196,19 @@ void _EnqueueLogTask(LogData* log_data) {
   log_data->fd = yeti::Logger::instance().GetFileDesc();
   bool is_colored = yeti::Logger::instance().IsColored();
 
-  LogData printed_data = *log_data;
-  auto print_func = [printed_data, is_colored] {
-    std::string log_str = _CreateLogStr(printed_data) + "\n";
+  auto print_func = [log_data, is_colored] {
+    std::string log_str = _CreateLogStr(log_data) + "\n";
 
 // To colorize stdout and stderr in Windows cmd.exe it is necessary
 // to include windows.h and use SetConsoleTextAttribute().
 // It is terrible, so I decided to disable coloring on WIN32 platform.
 #ifndef _WIN32
-    if (isatty(fileno(printed_data.fd)) != 0 && is_colored) {
-      log_str = printed_data.color + log_str + std::string(YETI_RESET);
+    if (isatty(fileno(log_data->fd)) != 0 && is_colored) {
+      log_str = log_data->color + log_str + std::string(YETI_RESET);
     }
 #endif  // _WIN32
 
-    std::fprintf(printed_data.fd, log_str.c_str());
+    std::fprintf(log_data->fd, log_str.c_str());
   };
 
   yeti::Logger::instance().EnqueueTask(print_func);

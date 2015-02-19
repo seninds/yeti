@@ -1,3 +1,2 @@
 TODO list:
-* create LogData obj using shared_ptr
 * margins for all tags in logger format string

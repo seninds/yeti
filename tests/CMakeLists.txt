@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 project(yeti_test)
 
 if(MINGW OR UNIX)
-    add_definitions(-pthread -std=gnu++11)
+    add_definitions(-pthread -std=gnu++11 -Wall -Werror)
 endif()
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/libs)
