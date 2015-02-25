@@ -20,13 +20,16 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 ###############################################################################
 # YETI_LOG_LEVEL Test
-add_executable(yeti_log_level yeti_log_level.cc)
-target_link_libraries(yeti_log_level yeti gtest_main pthread)
-add_test(yeti_log_level ${CMAKE_BINARY_DIR}/tests/yeti_log_level)
+add_executable(test_environment test_environment.cc)
+target_link_libraries(test_environment yeti gtest_main pthread)
+add_test(test_environment ${CMAKE_BINARY_DIR}/tests/test_environment)
 
-add_executable(common_interface common_interface.cc)
-target_link_libraries(common_interface yeti gtest_main pthread)
-add_test(common_interface ${CMAKE_BINARY_DIR}/tests/common_interface)
+add_executable(test_common_interface test_common_interface.cc)
+target_link_libraries(test_common_interface yeti gtest_main pthread)
+add_test(test_common_interface ${CMAKE_BINARY_DIR}/tests/test_common_interface)
 
-add_executable(set_log_colored set_log_colored.cc)
-target_link_libraries(set_log_colored yeti gtest_main pthread)
+add_executable(test_colors test_colors.cc)
+target_link_libraries(test_colors yeti gtest_main pthread)
+
+add_executable(test_performance test_performance.cc)
+target_link_libraries(test_performance yeti gtest_main pthread)
