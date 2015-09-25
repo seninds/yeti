@@ -3,19 +3,19 @@ cmake_minimum_required(VERSION 2.8)
 project(yeti_test)
 
 if(MINGW OR UNIX)
-    add_definitions(-pthread -std=gnu++11 -Wall -Werror)
+    set(CMAKE_CXX_FLAGS "-pthread -std=c++11 -Wall -Werror")
 endif()
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/libs)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_BINARY_DIR}/tests)
-set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread -std=gnu++11 -Wl,--no-as-needed")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -pthread -std=c++11 -Wl,--no-as-needed")
 
 include_directories (../inc)
 
 ###############################################################################
 # GTest
 ADD_SUBDIRECTORY (gtest)
-include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR}) 
+include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
 
 ###############################################################################
